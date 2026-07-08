@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc, type AppRouter } from "@/lib/trpc";
+import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,7 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 export function StartupSection() {
   const utils = trpc.useUtils();
   const [idea, setIdea] = useState("");
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<number | null>(null);
   const list = trpc.hopeIntelligence.startup.list.useQuery();
   const detail = trpc.hopeIntelligence.startup.get.useQuery({ id: activeId! }, { enabled: activeId != null });
   const generate = trpc.hopeIntelligence.startup.generate.useMutation({
@@ -30,7 +30,7 @@ export function StartupSection() {
       utils.hopeIntelligence.startup.list.invalidate();
       if (d.id) setActiveId(d.id);
     },
-    onError(e: TRPCClientError<AppRouter>) { toast.error(e.message); },
+    onError(e) { toast.error(e.message); },
   });
 
   const bp = detail.data;
@@ -58,7 +58,7 @@ export function StartupSection() {
           <CardContent className="space-y-2">
             {list.isLoading ? <SectionLoading /> : !list.data || list.data.length === 0 ? (
               <p className="text-sm text-white/40">No blueprints yet.</p>
-            ) : list.data.map((b: { id: string; name: string; idea: string }) => (
+            ) : list.data.map((b) => (
               <button key={b.id} onClick={() => setActiveId(b.id)} className={`w-full text-left rounded-lg border px-3 py-2 transition-colors ${activeId === b.id ? "border-amber-500/50 bg-amber-500/5" : "border-white/10 hover:bg-white/[0.04]"}`}>
                 <div className="text-sm text-white/90 font-medium">{b.name ?? "Untitled"}</div>
                 <div className="text-xs text-white/40 line-clamp-1">{b.idea}</div>

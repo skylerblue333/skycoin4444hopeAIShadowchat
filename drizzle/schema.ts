@@ -297,54 +297,6 @@ export const datingReports = mysqlTable("dating_reports", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-// ============ CRYPTO MINING TABLES ============
-export const miningPools = mysqlTable("mining_pools", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  coin: varchar("coin", { length: 255 }).notNull(), // BTC, ETH, SOL, DOGE
-  difficulty: float("difficulty").default(0),
-  hashrate: float("hashrate").default(0),
-  reward: float("reward").default(0),
-  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
-
-export const miningStats = mysqlTable("mining_stats", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
-  poolId: varchar("pool_id", { length: 255 }).references(() => miningPools.id),
-  coin: varchar("coin", { length: 255 }).notNull(),
-  hashrate: float("hashrate").default(0),
-  shares: int("shares").default(0),
-  rewards: float("rewards").default(0),
-  lastUpdate: timestamp("last_update").default(sql`CURRENT_TIMESTAMP`),
-});
-
-export const nftListings = mysqlTable("nft_listings", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  creatorId: varchar("creator_id", { length: 255 }).references(() => users.id).notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
-  description: varchar("description", { length: 255 }),
-  image: varchar("image", { length: 255 }),
-  price: float("price").notNull(),
-  currency: varchar("currency", { length: 255 }).default("SKY444"),
-  rarity: varchar("rarity", { length: 255 }), // common | rare | epic | legendary
-  contractAddress: varchar("contract_address", { length: 255 }),
-  tokenId: varchar("token_id", { length: 255 }),
-  status: varchar("status", { length: 255 }).default("active"), // active | sold | delisted
-  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
-
-export const nftTransactions = mysqlTable("nft_transactions", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  nftId: varchar("nft_id", { length: 255 }).references(() => nftListings.id).notNull(),
-  buyerId: varchar("buyer_id", { length: 255 }).references(() => users.id).notNull(),
-  sellerId: varchar("seller_id", { length: 255 }).references(() => users.id).notNull(),
-  price: float("price").notNull(),
-  txHash: varchar("tx_hash", { length: 255 }),
-  status: varchar("status", { length: 255 }).default("pending"), // pending | completed | failed
-  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
-
 // ============ FRAUD & SECURITY TABLES ============
 export const fraudSignals = mysqlTable("fraud_signals", {
   id: varchar("id", { length: 255 }).primaryKey(),

@@ -1,12 +1,4 @@
-## 🚀 Skycoin4444 Ecosystem - Production Release Candidate (RC1)
-
-### Contact Information
-- **Name:** Skyler Blue S
-- **Email:** iitrskylerblue4444@gmail.com
-- **Phone 1:** 479-387-1040
-- **Phone 2:** 479-406-7123
-- **Address:** 1845 Lake Fort Smith Rd, Mountainburg, AR 72946
-- **Company:** Innovative Information Technology Resolutions
+# 🚀 Skycoin4444 Ecosystem - Production Release Candidate (RC1)
 
 **The Complete Web3 Platform: AI, Crypto, Social, Gaming, and Enterprise Services**
 
@@ -452,7 +444,7 @@ const { mutate: createUser } = trpc.admin.create.useMutation();
 
 ### Reporting Security Issues
 
-Please report security vulnerabilities to: iitrskylerblue4444@gmail.com
+Please report security vulnerabilities to: security@skycoin4444.com
 
 ---
 

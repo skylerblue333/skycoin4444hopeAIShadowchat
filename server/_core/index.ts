@@ -36,29 +36,6 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
-
-  // Scheduled task handler for daily todo generation at 4:44 AM
-  app.post("/api/scheduled/generate-daily-todo", async (req, res) => {
-    try {
-      const today = new Date().toISOString().split('T')[0];
-      const todos = [
-        { id: "1", title: "Review Phase 2 core modules", completed: false, priority: "high" },
-        { id: "2", title: "Implement Tier 1 features", completed: false, priority: "high" },
-        { id: "3", title: "Deploy to production", completed: false, priority: "medium" },
-        { id: "4", title: "Set up CI/CD pipeline", completed: false, priority: "medium" },
-        { id: "5", title: "Push to all 30 repositories", completed: false, priority: "high" },
-      ];
-      console.log(`[4:44 AM] Generated daily todo list for ${today}`);
-      res.json({ ok: true, date: today, todoCount: todos.length, generatedAt: new Date() });
-    } catch (error) {
-      console.error("[4:44 AM] Error generating daily todo:", error);
-      res.status(500).json({
-        error: error instanceof Error ? error.message : "Unknown error",
-        timestamp: new Date(),
-      });
-    }
-  });
-
   // tRPC API
   app.use(
     "/api/trpc",

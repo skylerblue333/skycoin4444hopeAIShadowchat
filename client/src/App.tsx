@@ -2128,9 +2128,9 @@ function Router() {
         <Route path="/yield-farming" component={YieldFarming} />
         <Route path="/zapier-integration" component={ZapierIntegration} />
         <Route path="/zero-knowledge-proof" component={ZeroKnowledgeProof} />
-  
+        <Route path="/404" component={NotFound} />
         {/* Final fallback route */}
-        <Route path="/:rest*" component={NotFound} />
+        <Route component={NotFound} />
       </Switch>
     </Suspense>
   );
