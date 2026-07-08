@@ -293,14 +293,39 @@ export const appRouter = router({
     create: protectedProcedure.input(z.object({})).mutation(({ input }) => ({ success: true })),
   }),
   aiEngineer: router({
-    list: publicProcedure.query(() => []),
-    get: publicProcedure.input(z.string()).query(({ input }) => ({})),
-    create: protectedProcedure.input(z.object({})).mutation(({ input }) => ({ success: true })),
+    create: protectedProcedure.input(z.object({ prompt: z.string() })).mutation(async ({ input }) => {
+      // Simulate AI code generation
+      const generatedCode = `// Generated code for: ${input.prompt}\nfunction exampleFunction() {\n  console.log("Hello from AI Code!");\n}`; // Placeholder
+      return { success: true, code: generatedCode };
+    }),
+    execute: protectedProcedure.input(z.object({ code: z.string() })).mutation(async ({ input }) => {
+      // Simulate code execution
+      const output = `Executing code...\n${input.code}\nExecution complete.`; // Placeholder
+      return { success: true, output: output };
+    }),
+    debug: protectedProcedure.input(z.object({ code: z.string() })).mutation(async ({ input }) => {
+      // Simulate code debugging
+      const debugInfo = `Debugging code...\n${input.code}\nNo issues found.`; // Placeholder
+      return { success: true, debugInfo: debugInfo };
+    }),
   }),
   aiMarket: router({
     list: publicProcedure.query(() => []),
     get: publicProcedure.input(z.string()).query(({ input }) => ({})),
     create: protectedProcedure.input(z.object({})).mutation(({ input }) => ({ success: true })),
+  }),
+  cloudIDE: router({
+    createProject: protectedProcedure.mutation(async ({ ctx }) => {
+      const projectId = nanoid();
+      return { success: true, projectId };
+    }),
+    saveProject: protectedProcedure.input(z.object({ projectId: z.string(), code: z.string() })).mutation(async ({ input }) => {
+      return { success: true, projectId: input.projectId };
+    }),
+    executeCode: protectedProcedure.input(z.object({ projectId: z.string(), code: z.string() })).mutation(async ({ input }) => {
+      const output = `Executing code for project ${input.projectId}:\n${input.code}\nExecution complete.`;
+      return { success: true, output };
+    }),
   }),
   aiPersonas: router({
     list: publicProcedure.query(() => []),
@@ -308,9 +333,11 @@ export const appRouter = router({
     create: protectedProcedure.input(z.object({})).mutation(({ input }) => ({ success: true })),
   }),
   hopeAI: router({
-    list: publicProcedure.query(() => []),
-    get: publicProcedure.input(z.string()).query(({ input }) => ({})),
-    create: protectedProcedure.input(z.object({})).mutation(({ input }) => ({ success: true })),
+    chat: protectedProcedure.input(z.object({ message: z.string() })).mutation(async ({ input }) => {
+      // Simulate AI chat response
+      const aiResponse = `Hello! You said: "${input.message}". I am Hope AI, how can I help you further?`; // Placeholder
+      return { success: true, response: aiResponse };
+    }),
   }),
   hopeIntelligence: router({
     list: publicProcedure.query(() => []),
