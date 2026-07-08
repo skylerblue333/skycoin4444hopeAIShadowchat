@@ -65,7 +65,7 @@ export function TodaySection() {
             <p className="text-sm text-white/40">No suggestions right now — add a goal or mission to get tailored guidance.</p>
           ) : (
             <ul className="space-y-2">
-              {data.suggestions.map((s, i) => (
+              {data.suggestions.map((s: string, i: number) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-white/80">
                   <span className="mt-0.5 text-xs font-bold" style={{ color: GOLD }}>{i + 1}.</span>
                   {s}
@@ -83,7 +83,7 @@ export function TodaySection() {
           <CardContent className="space-y-2">
             {data.goals.length === 0 ? (
               <p className="text-sm text-white/40">No open goals. Tell HOPE what you're working toward.</p>
-            ) : data.goals.map((g) => (
+            ) : data.goals.map((g: { id: string; title: string; status: string }) => (
               <div key={g.id} className="flex items-center justify-between rounded-lg border border-white/10 px-3 py-2">
                 <span className="text-sm text-white/80">{g.title}</span>
                 <Badge variant="outline" className="border-white/20 text-white/60 text-xs">{g.status}</Badge>
@@ -98,7 +98,7 @@ export function TodaySection() {
           <CardContent className="space-y-2">
             {data.topOpportunities.length === 0 ? (
               <p className="text-sm text-white/40">Refresh matches in the Opportunities tab.</p>
-            ) : data.topOpportunities.map((m) => (
+            ) : data.topOpportunities.map((m: { id: string; opportunity?: { title: string }; reasoning: string; score: number }) => (
               <div key={m.id} className="rounded-lg border border-white/10 px-3 py-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90 font-medium">{m.opportunity?.title ?? "Opportunity"}</span>
@@ -140,7 +140,7 @@ export function TodaySection() {
             <p className="text-sm text-white/40">Follow a few people and we'll surface second-degree connections.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
-              {data.networkSuggestions.map((n: any) => (
+              {data.networkSuggestions.map((n: { userId: string; avatar?: string; name?: string; username?: string; mutualCount: number }) => (
                 <div key={n.userId} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] pl-1 pr-3 py-1">
                   <div className="h-7 w-7 rounded-full bg-white/10 flex items-center justify-center text-xs text-white/70 overflow-hidden">
                     {n.avatar ? <img src={n.avatar} alt="" className="h-full w-full object-cover" /> : (n.name ?? n.username ?? "?").slice(0, 1).toUpperCase()}

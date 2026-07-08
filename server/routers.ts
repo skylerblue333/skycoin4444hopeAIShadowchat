@@ -343,6 +343,96 @@ export const appRouter = router({
     list: publicProcedure.query(() => []),
     get: publicProcedure.input(z.string()).query(({ input }) => ({})),
     create: protectedProcedure.input(z.object({})).mutation(({ input }) => ({ success: true })),
+    missionControl: router({
+      today: publicProcedure.input(z.object({ withSuggestions: z.boolean() })).query(async ({ input }) => {
+        // Placeholder for mission control data
+        return {
+          greetingName: "Skyler Blue",
+          goals: [{ id: "1", title: "Launch RC1", status: "In Progress" }],
+          activeMissions: [{ id: "1", title: "Fix TS Errors" }],
+          learning: [{ id: "1", title: "Drizzle ORM" }],
+          unreadMessages: 5,
+          communities: 12,
+          revenue: 12345,
+          suggestions: input.withSuggestions ? ["Review new PRs", "Optimize database queries"] : [],
+          topOpportunities: [{ id: "1", reasoning: "High match with project goals", score: 95 }],
+          reputation: { overall: 85, learning: 90, builder: 80, teaching: 70, community: 95, trust: 88 },
+          networkSuggestions: [{ userId: "1", name: "Alice", mutualCount: 3 }],
+        };
+      }),
+    }),
+    startup: router({
+      list: publicProcedure.query(async () => {
+        // Placeholder for listing blueprints
+        return [
+          {
+            id: "bp_sample1",
+            name: "Sample Startup Idea 1",
+            tagline: "Revolutionizing the future",
+            idea: "An AI-powered platform for personalized learning.",
+            businessPlan: { vision: "To empower individuals", mission: "Provide accessible education" },
+            branding: { name: "EduAI", logo: "logo.png" },
+            marketing: { channels: ["Social Media", "Content Marketing"] },
+            mvpRoadmap: [{ phase: "Phase 1", items: ["User authentication", "Basic course creation"] }],
+            teamPlan: [{ role: "CEO", focus: "Strategy" }],
+          },
+        ];
+      }),
+      get: publicProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+        // Placeholder for fetching a specific blueprint
+        return {
+          id: input.id,
+          name: "Sample Startup",
+          tagline: "Revolutionizing the future with AI",
+          idea: "An AI-powered platform for personalized learning.",
+          businessPlan: { vision: "To empower individuals", mission: "Provide accessible education" },
+          branding: { name: "EduAI", logo: "logo.png" },
+          marketing: { channels: ["Social Media", "Content Marketing"] },
+          mvpRoadmap: [{ phase: "Phase 1", items: ["User authentication", "Basic course creation"] }],
+          teamPlan: [{ role: "CEO", focus: "Strategy" }],
+        } as { // Explicitly cast to ensure type safety
+          id: string;
+          name: string;
+          tagline: string;
+          idea: string;
+          businessPlan: Record<string, unknown>;
+          branding: Record<string, unknown>;
+          marketing: Record<string, unknown>;
+          mvpRoadmap: Array<{ phase: string; items: string[] }>;
+          teamPlan: Array<{ role: string; focus: string }>;
+        };
+      }),
+      create: protectedProcedure.input(z.object({ idea: z.string() })).mutation(async ({ input }) => {
+        // Placeholder for generating a new blueprint
+        const newId = `bp_${Date.now()}`;
+        return {
+          id: newId,
+          name: "Generated Startup Idea",
+          tagline: "AI-driven innovation",
+          idea: input.idea,
+          businessPlan: { vision: "Automate everything", mission: "Simplify complex tasks" },
+          branding: { name: "AutoGen", logo: "autogen.png" },
+          marketing: { channels: ["SEO", "Partnerships"] },
+          mvpRoadmap: [{ phase: "Phase 1", items: ["Core logic", "Basic UI"] }],
+          teamPlan: [{ role: "Lead Dev", focus: "Implementation" }],
+        };
+      }),
+      generate: protectedProcedure.input(z.object({ idea: z.string() })).mutation(async ({ input }) => {
+        // Placeholder for generating a new blueprint
+        const newId = `bp_${Date.now()}`;
+        return {
+          id: newId,
+          name: "Generated Startup Idea",
+          tagline: "AI-driven innovation",
+          idea: input.idea,
+          businessPlan: { vision: "Automate everything", mission: "Simplify complex tasks" },
+          branding: { name: "AutoGen", logo: "autogen.png" },
+          marketing: { channels: ["SEO", "Partnerships"] },
+          mvpRoadmap: [{ phase: "Phase 1", items: ["Core logic", "Basic UI"] }],
+          teamPlan: [{ role: "Lead Dev", focus: "Implementation" }],
+        };
+      }),
+    }),
   }),
   agents44: router({
     list: publicProcedure.query(() => []),

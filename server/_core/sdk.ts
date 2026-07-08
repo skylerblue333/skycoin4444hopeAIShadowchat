@@ -333,12 +333,16 @@ function buildCronUser(
 ): AuthenticatedUser {
   const now = new Date();
   return {
-    id: -1,
+    id: `cron-${userInfo.openId}`,
     openId: userInfo.openId,
     name: userInfo.name || "Manus Scheduled Task",
-    email: null,
-    loginMethod: null,
+    email: userInfo.email ?? null,
+    username: `cron-${userInfo.openId}`,
+    bio: null,
+    avatar: null,
+    balance: 0,
     role: "user",
+    verified: false,
     createdAt: now,
     updatedAt: now,
     lastSignedIn: now,
