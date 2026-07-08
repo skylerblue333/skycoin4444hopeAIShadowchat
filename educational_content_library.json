@@ -1,0 +1,55 @@
+{
+  "courses": [
+    {
+      "id": "blockchain-fundamentals",
+      "title": "Blockchain Fundamentals",
+      "lessons": [
+        {
+          "id": "intro-to-blockchain",
+          "title": "Introduction to Blockchain",
+          "text_content": "Blockchain is a decentralized, distributed, and often public, digital ledger that is used to record transactions across many computers so that any involved record cannot be altered retroactively, without the alteration of all subsequent blocks. This allows the participants to verify and audit transactions independently and relatively inexpensively.",
+          "video_url": "https://www.youtube.com/watch?v=SSo_EIw5Zp4",
+          "quizzes": [
+            {
+              "question": "What is the primary characteristic of a blockchain?",
+              "options": ["Centralized", "Distributed", "Private", "Ephemeral"],
+              "answer": "Distributed"
+            }
+          ]
+        },
+        {
+          "id": "cryptographic-hashing",
+          "title": "Cryptographic Hashing",
+          "text_content": "Cryptographic hashing is a fundamental concept in blockchain technology. A hash function takes an input (or 'message') and returns a fixed-size alphanumeric string, which is called the 'hash value' or 'digest'. The key properties of a cryptographic hash function are: it's deterministic, quick to compute, pre-image resistant, second pre-image resistant, and collision resistant.",
+          "video_url": "https://www.youtube.com/watch?v=fD1s-o_m_bA",
+          "quizzes": [
+            {
+              "question": "Which of the following is NOT a key property of a cryptographic hash function?",
+              "options": ["Deterministic", "Quick to compute", "Collision resistant", "Reversible"],
+              "answer": "Reversible"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "english-fluency",
+      "title": "English Fluency Mastery",
+      "lessons": [
+        {
+          "id": "basic-greetings",
+          "title": "Basic English Greetings",
+          "text_content": "Learning basic greetings is the first step to becoming fluent in English. Common greetings include 'Hello', 'Hi', 'Good morning', 'Good afternoon', and 'Good evening'. Practice these phrases with different intonations.",
+          "video_url": "https://www.youtube.com/watch?v=ImportantEnglishGreetings",
+          "quizzes": [
+            {
+              "question": "Which greeting is typically used in the morning?",
+              "options": ["Good night", "Good afternoon", "Good morning", "Good evening"],
+              "answer": "Good morning"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

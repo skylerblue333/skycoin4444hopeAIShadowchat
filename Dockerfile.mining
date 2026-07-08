@@ -1,0 +1,30 @@
+# Mining orchestrator image
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install mining dependencies
+RUN apk add --no-cache dumb-init python3 make g++ curl
+
+# Copy application
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile --prod
+
+COPY server ./server
+COPY drizzle ./drizzle
+COPY shared ./shared
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+RUN chown -R nodejs:nodejs /app
+
+USER nodejs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3001/mining/health || exit 1
+
+ENTRYPOINT ["/sbin/dumb-init", "--"]
+CMD ["node", "server/max-parallel-mining.ts"]
+
+EXPOSE 3001

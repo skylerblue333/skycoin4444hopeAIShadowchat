@@ -1,0 +1,85 @@
+{
+  "common": {
+    "welcome": "Welcome to SKY444 Ecosystem",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign Up",
+    "language": "Language"
+  },
+  "mining": {
+    "title": "Crypto Mining",
+    "start": "Start Mining",
+    "stop": "Stop Mining",
+    "hashrate": "Hash Rate",
+    "earnings": "Total Earnings",
+    "workers": "Active Workers",
+    "pools": "Mining Pools",
+    "difficulty": "Difficulty"
+  },
+  "wallet": {
+    "title": "Wallet",
+    "balance": "Balance",
+    "send": "Send",
+    "receive": "Receive",
+    "history": "Transaction History",
+    "address": "Wallet Address",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw"
+  },
+  "trading": {
+    "title": "Trading",
+    "buy": "Buy",
+    "sell": "Sell",
+    "swap": "Swap",
+    "price": "Price",
+    "volume": "Volume",
+    "market": "Market",
+    "portfolio": "Portfolio"
+  },
+  "social": {
+    "title": "Social",
+    "posts": "Posts",
+    "followers": "Followers",
+    "following": "Following",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "dating": {
+    "title": "Dating",
+    "discover": "Discover",
+    "matches": "Matches",
+    "chat": "Chat",
+    "like": "Like",
+    "pass": "Pass",
+    "superlike": "Super Like"
+  },
+  "marketplace": {
+    "title": "Marketplace",
+    "products": "Products",
+    "cart": "Shopping Cart",
+    "checkout": "Checkout",
+    "orders": "My Orders",
+    "listings": "My Listings",
+    "reviews": "Reviews"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": "Users",
+    "analytics": "Analytics",
+    "reports": "Reports",
+    "settings": "Settings",
+    "moderation": "Moderation"
+  }
+}

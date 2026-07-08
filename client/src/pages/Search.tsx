@@ -1,174 +1,186 @@
-// @ts-nocheck
-import { useState } from "react";
-import { trpc } from "@/lib/trpc";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/ui/spinner";
-import { Search as SearchIcon, TrendingUp, Zap } from "lucide-react";
+import { useState, useEffect } from 'react';
+import { Link } from 'wouter';
+import { Search as SearchIcon, Clock, TrendingUp, Star } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+// PAGE_INDEX will be loaded dynamically
+const pageIndex = { pages: [], total: 1062, categories: {} } as any;
+
+interface SearchResult {
+  page: string;
+  category: string;
+  url: string;
+  relevance: number;
+}
+
+function pageToUrl(page: string) {
+  if (page === 'Home') return '/';
+  return '/' + page.toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase();
+}
 
 export default function Search() {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<"all" | "marketplace" | "school" | "governance" | "charity" | "social" | "video">("all");
-  const [showTrending, setShowTrending] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  const { data: searchResults, isLoading: isSearching } = trpc.search.globalSearch.useQuery(
-    { query, category, limit: 20 },
-    { enabled: query.length > 0 }
-  );
+  useEffect(() => {
+    const saved = localStorage.getItem('recentSearches');
+    if (saved) setRecentSearches(JSON.parse(saved));
+  }, []);
 
-  const { data: trendingData } = trpc.search.trendingSearches.useQuery();
-  const { data: suggestionsData } = trpc.search.searchSuggestions.useQuery(
-    { query },
-    { enabled: query.length > 0 && query.length < 50 }
-  );
+  const performSearch = (term: string) => {
+    if (!term.trim()) {
+      setResults([]);
+      return;
+    }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowTrending(false);
+    const searchResults: SearchResult[] = [];
+    const lowerTerm = term.toLowerCase();
+
+    pageIndex.pages.forEach(page => {
+      const lowerPage = page.toLowerCase();
+      const category = page.split(/(?=[A-Z])/)[0] || 'Other';
+
+      if (lowerPage.includes(lowerTerm)) {
+        let relevance = 0;
+        if (lowerPage === lowerTerm) relevance = 100;
+        else if (lowerPage.startsWith(lowerTerm)) relevance = 80;
+        else if (lowerPage.includes(lowerTerm)) relevance = 60;
+
+        searchResults.push({
+          page,
+          category,
+          url: pageToUrl(page),
+          relevance,
+        });
+      }
+    });
+
+    setResults(searchResults.sort((a, b) => b.relevance - a.relevance));
+
+    if (term.trim() && !recentSearches.includes(term)) {
+      const updated = [term, ...recentSearches].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem('recentSearches', JSON.stringify(updated));
+    }
   };
 
-  const handleTrendingClick = (term: string) => {
-    setQuery(term);
-    setShowTrending(false);
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    performSearch(term);
   };
+
+  const popularPages = ['Trading', 'Portfolio', 'Wallet', 'Feed', 'Marketplace', 'Games', 'Courses', 'AiBrain'].filter(p => pageIndex.pages.includes(p));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Search SKYCOIN4444</h1>
-          <p className="text-slate-400">Find courses, products, proposals, and more across all modules</p>
-        </div>
-
-        {/* Search Bar */}
-        <form onSubmit={handleSearch} className="mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-clip-text text-transparent mb-6">
+            Discover Pages
+          </h1>
           <div className="relative">
-            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 w-5 h-5" />
+            <SearchIcon className="absolute left-4 top-4 w-5 h-5 text-slate-500" />
             <Input
-              type="text"
-              placeholder="Search across all modules..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="pl-12 py-3 text-lg bg-slate-800/50 border-slate-700 focus:border-cyan-500"
+              placeholder="Search across 1,062 pages..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              autoFocus
+              className="pl-12 py-3 bg-slate-800 border-slate-700 text-white text-lg"
             />
           </div>
+        </div>
+      </header>
 
-          {/* Category Tabs */}
-          <div className="mt-4 flex gap-2 flex-wrap">
-            {[
-              { value: "all" as const, label: "All" },
-              { value: "marketplace" as const, label: "Marketplace" },
-              { value: "school" as const, label: "School" },
-              { value: "governance" as const, label: "Governance" },
-              { value: "charity" as const, label: "Charity" },
-              { value: "social" as const, label: "Social" },
-              { value: "video" as const, label: "Video" },
-            ].map((cat) => (
-              <Button
-                key={cat.value}
-                onClick={() => setCategory(cat.value)}
-                variant={category === cat.value ? "default" : "outline"}
-                className={category === cat.value ? "bg-cyan-600" : "border-slate-700"}
-              >
-                {cat.label}
-              </Button>
-            ))}
-          </div>
-        </form>
-
-        {/* Suggestions */}
-        {query.length > 0 && suggestionsData?.suggestions && suggestionsData.suggestions.length > 0 && (
-          <div className="mb-6 p-4 bg-slate-800/30 rounded-lg border border-slate-700/50">
-            <p className="text-sm text-slate-400 mb-3">Suggestions:</p>
-            <div className="flex flex-wrap gap-2">
-              {suggestionsData.suggestions.map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setQuery(suggestion)}
-                  className="px-3 py-1 bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 text-sm rounded-full transition-colors"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Results */}
-        {query.length > 0 ? (
-          <div>
-            {isSearching ? (
-              <div className="flex items-center justify-center py-12">
-                <Spinner />
-                <span className="ml-3 text-slate-400">Searching...</span>
-              </div>
-            ) : searchResults?.results && searchResults.results.length > 0 ? (
-              <div>
-                <p className="text-sm text-slate-400 mb-4">
-                  Found {searchResults.totalResults} result{searchResults.totalResults !== 1 ? "s" : ""}
-                </p>
-                <div className="space-y-3">
-                  {searchResults.results.map((result: any, idx) => (
-                    <Card key={idx} className="bg-slate-800/50 border-slate-700/50 p-4 hover:border-slate-600/50 transition-colors cursor-pointer">
-                      <div className="flex items-start gap-4">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {searchTerm ? (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-white mb-4">
+              {results.length} result{results.length !== 1 ? 's' : ''} found
+            </h2>
+            {results.length === 0 ? (
+              <Card className="p-12 text-center border-slate-800">
+                <p className="text-slate-400 text-lg">No pages found matching "{searchTerm}"</p>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {results.map(result => (
+                  <Link key={result.page} href={result.url}>
+                    <Card className="p-4 border-slate-800 hover:border-pink-500/50 hover:bg-slate-800/50 transition-all cursor-pointer group">
+                      <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h3 className="font-semibold text-white">{result.title}</h3>
-                            <Badge variant="secondary" className="text-xs">{result.type}</Badge>
-                          </div>
-                          <p className="text-sm text-slate-400 line-clamp-2">{result.description}</p>
-                          {result.category && (
-                            <p className="text-xs text-slate-500 mt-2">Category: {result.category}</p>
-                          )}
-                          {result.price && (
-                            <p className="text-xs text-cyan-400 mt-2">💰 {result.price} SKY444</p>
-                          )}
+                          <p className="text-white font-semibold group-hover:text-pink-400 transition-colors">
+                            {result.page}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {result.category} • {result.url}
+                          </p>
                         </div>
-                        <Button size="sm" className="bg-cyan-600 hover:bg-cyan-700">
-                          View
-                        </Button>
+                        <div className="text-right">
+                          <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-semibold text-pink-500">
+                            {result.relevance}%
+                          </div>
+                        </div>
                       </div>
                     </Card>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {recentSearches.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-slate-500" />
+                  Recent Searches
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {recentSearches.map(search => (
+                    <Button
+                      key={search}
+                      variant="outline"
+                      onClick={() => handleSearch(search)}
+                      className="border-slate-700 hover:border-pink-500/50"
+                    >
+                      {search}
+                    </Button>
                   ))}
                 </div>
               </div>
-            ) : (
-              <Card className="bg-slate-800/30 border-slate-700/50 p-8 text-center">
-                <p className="text-slate-400">No results found for "{query}"</p>
-                <p className="text-sm text-slate-500 mt-2">Try different keywords or browse trending searches</p>
-              </Card>
             )}
-          </div>
-        ) : showTrending && trendingData?.trending ? (
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-5 h-5 text-cyan-400" />
-              <h2 className="text-xl font-bold text-white">Trending Searches</h2>
+            <div className="mb-12">
+              <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-pink-500" />
+                Popular Pages
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {popularPages.map(page => (
+                  <Link key={page} href={pageToUrl(page)}>
+                    <Card className="p-4 border-slate-800 hover:border-pink-500/50 hover:bg-slate-800/50 transition-all cursor-pointer group">
+                      <div className="flex items-center justify-between">
+                        <p className="text-white font-semibold group-hover:text-pink-400 transition-colors">
+                          {page}
+                        </p>
+                        <Star className="w-4 h-4 text-yellow-500" />
+                      </div>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {trendingData.trending.map((trend: any, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleTrendingClick(trend.term)}
-                  className="p-4 bg-slate-800/50 border border-slate-700/50 rounded-lg hover:border-cyan-500/50 transition-colors text-left group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-white group-hover:text-cyan-400">{trend.term}</p>
-                      <p className="text-xs text-slate-500 mt-1">{trend.count.toLocaleString()} searches</p>
-                    </div>
-                    <Badge variant="outline" className="text-xs">{trend.category}</Badge>
-                  </div>
-                </button>
-              ))}
+            <div className="text-center">
+              <Link href="/sitemap">
+                <Button className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90">
+                  Browse All {pageIndex.total} Pages
+                </Button>
+              </Link>
             </div>
-          </div>
-        ) : null}
-      </div>
+          </>
+        )}
+      </main>
     </div>
   );
 }

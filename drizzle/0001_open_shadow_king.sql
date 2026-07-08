@@ -1,0 +1,40 @@
+ALTER TABLE `audit_ledger` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `comments` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.116';--> statement-breakpoint
+ALTER TABLE `custody_wallets` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `dating_blocks` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_likes` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_matches` MODIFY COLUMN `user_id_1` varchar(255) NOT NULL;--> statement-breakpoint
+ALTER TABLE `dating_matches` MODIFY COLUMN `user_id_2` varchar(255) NOT NULL;--> statement-breakpoint
+ALTER TABLE `dating_matches` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_messages` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_notifications` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_preferences` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_profiles` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `dating_reports` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `dating_subscriptions` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `follows` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `fraud_signals` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `governance_proposals` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `governance_votes` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `likes` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.116';--> statement-breakpoint
+ALTER TABLE `messages` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `moderation_logs` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `notifications` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `on_chain_transactions` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `orders` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.116';--> statement-breakpoint
+ALTER TABLE `platform_metrics` MODIFY COLUMN `timestamp` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `posts` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.115';--> statement-breakpoint
+ALTER TABLE `posts` MODIFY COLUMN `updated_at` timestamp DEFAULT '2026-07-03 13:42:24.115';--> statement-breakpoint
+ALTER TABLE `products` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.116';--> statement-breakpoint
+ALTER TABLE `reviews` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `streams` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.116';--> statement-breakpoint
+ALTER TABLE `token_balances` MODIFY COLUMN `updated_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `token_market_state` MODIFY COLUMN `updated_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `transactions` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.116';--> statement-breakpoint
+ALTER TABLE `user_archetypes` MODIFY COLUMN `updated_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `user_behavior_signals` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';--> statement-breakpoint
+ALTER TABLE `users` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.114';--> statement-breakpoint
+ALTER TABLE `users` MODIFY COLUMN `updated_at` timestamp DEFAULT '2026-07-03 13:42:24.114';--> statement-breakpoint
+ALTER TABLE `wallet_audit_log` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `wallet_transactions` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.118';--> statement-breakpoint
+ALTER TABLE `wallets` MODIFY COLUMN `created_at` timestamp DEFAULT '2026-07-03 13:42:24.117';

@@ -140,7 +140,7 @@ export function TodaySection() {
             <p className="text-sm text-white/40">Follow a few people and we'll surface second-degree connections.</p>
           ) : (
             <div className="flex flex-wrap gap-2">
-              {data.networkSuggestions.map((n: any) => (
+              {data.networkSuggestions.map((n) => (
                 <div key={n.userId} className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] pl-1 pr-3 py-1">
                   <div className="h-7 w-7 rounded-full bg-white/10 flex items-center justify-center text-xs text-white/70 overflow-hidden">
                     {n.avatar ? <img src={n.avatar} alt="" className="h-full w-full object-cover" /> : (n.name ?? n.username ?? "?").slice(0, 1).toUpperCase()}

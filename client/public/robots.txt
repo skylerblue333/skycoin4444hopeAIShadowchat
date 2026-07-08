@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /.next
+Sitemap: https://skycoinpro.manus.space/sitemap.xml

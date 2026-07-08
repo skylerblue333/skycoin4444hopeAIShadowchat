@@ -1,0 +1,113 @@
+version: '3.9'
+
+services:
+  # Main Application Server
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: skycoin-app
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      COINBASE_API_KEY: ${COINBASE_API_KEY}
+      COINBASE_PRIVATE_KEY: ${COINBASE_PRIVATE_KEY}
+      ADMIN_WALLET_ADDRESS: ${ADMIN_WALLET_ADDRESS}
+      MINING_ENABLED: "true"
+      MINING_WORKERS: "128"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    networks:
+      - skycoin-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Mining Orchestrator
+  mining-orchestrator:
+    build:
+      context: ..
+      dockerfile: Dockerfile.mining
+    container_name: skycoin-mining
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      ADMIN_WALLET_ADDRESS: ${ADMIN_WALLET_ADDRESS}
+      MINING_POOLS: "5"
+      WORKERS_PER_POOL: "25"
+      MANUS_MINING_ENABLED: "true"
+      DELL_R630_ENABLED: "true"
+      LOCAL_MINING_ENABLED: "true"
+    volumes:
+      - ./mining-data:/app/mining-data
+      - ./mining-logs:/app/mining-logs
+    networks:
+      - skycoin-network
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  # Database
+  database:
+    image: mysql:8.0
+    container_name: skycoin-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: skycoin
+      MYSQL_USER: skycoin
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - skycoin-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  cache:
+    image: redis:7-alpine
+    container_name: skycoin-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - cache-data:/data
+    networks:
+      - skycoin-network
+    restart: unless-stopped
+
+  # Blockchain Node (Optional - for real transactions)
+  blockchain-node:
+    image: ethereum/client-go:latest
+    container_name: skycoin-eth-node
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+    volumes:
+      - blockchain-data:/root/.ethereum
+    networks:
+      - skycoin-network
+    command: --http --http.addr 0.0.0.0 --http.port 8545 --ws --ws.addr 0.0.0.0 --ws.port 8546
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  cache-data:
+  blockchain-data:
+
+networks:
+  skycoin-network:
+    driver: bridge

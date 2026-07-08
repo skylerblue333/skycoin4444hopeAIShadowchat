@@ -30,13 +30,13 @@ const GamingPage: React.FC = () => {
   });
 
   const handlePlayGame = async (gameId: string) => {
-    const score = Math.floor(Math.random() * 1000);
-    const won = Math.random() > 0.5;
+    const score = Math.floor((Math.random()) * 1000);
+    const won = (Math.random()) > 0.5;
     await recordSessionMutation.mutateAsync({
       gameId,
       score,
       won,
-      duration: Math.floor(Math.random() * 600),
+      duration: Math.floor((Math.random()) * 600),
     });
   };
 

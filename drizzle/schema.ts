@@ -3,21 +3,9 @@ import { mysqlTable, varchar, text, int, float, boolean, timestamp, primaryKey }
 import { sql } from "drizzle-orm";
 import { relations } from "drizzle-orm";
 
-// Type exports for all tables
-export type Post = typeof posts.$inferSelect;
-export type Comment = typeof comments.$inferSelect;
-export type Like = typeof likes.$inferSelect;
-export type Product = typeof products.$inferSelect;
-export type Order = typeof orders.$inferSelect;
-export type Stream = typeof streams.$inferSelect;
-export type Transaction = typeof transactions.$inferSelect;
-export type Wallet = typeof wallets.$inferSelect;
-export type TokenBalance = typeof tokenBalances.$inferSelect;
-
 // ============ USERS TABLE ============
 export const users = mysqlTable("users", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  openId: varchar("open_id", { length: 255 }).unique(),
   email: varchar("email", { length: 255 }).unique(),
   username: varchar("username", { length: 255 }).unique(),
   name: varchar("name", { length: 255 }),
@@ -29,10 +17,6 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
-
-// Export User type for TypeScript
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
 
 // ============ POSTS TABLE ============
 export const posts = mysqlTable("posts", {

@@ -19,17 +19,44 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { startLogin } from "@/const";
+// OAuth disabled - login URL no longer needed
+// import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Brain, Cpu, Globe, Rocket, Wallet, BarChart3, Shield, Zap, Star, Map, Bot, Building2, BookOpen, Gamepad2, MessageSquare, TrendingUp, Award } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+  // ─── MANIUS OS ───────────────────────────────────────────────
+  { icon: LayoutDashboard, label: "Home", path: "/" },
+  { icon: Zap, label: "Situation Room", path: "/situation-room" },
+  { icon: Star, label: "Life Command", path: "/life-command" },
+  { icon: Brain, label: "Destiny Engine", path: "/destiny-engine" },
+  { icon: Cpu, label: "Free Will", path: "/free-will" },
+  // ─── AI ──────────────────────────────────────────────────────
+  { icon: Bot, label: "Agent City", path: "/agent-city" },
+  { icon: Brain, label: "HOPE AI", path: "/hope-ai" },
+  { icon: MessageSquare, label: "ShadowChat", path: "/shadowchat" },
+  // ─── ECONOMY ─────────────────────────────────────────────────
+  { icon: Building2, label: "Central Bank", path: "/central-bank" },
+  { icon: Wallet, label: "Wallet", path: "/wallet" },
+  { icon: TrendingUp, label: "Marketplace", path: "/marketplace" },
+  { icon: Rocket, label: "Blockchain", path: "/blockchain-custody" },
+  // ─── NATION ──────────────────────────────────────────────────
+  { icon: Globe, label: "Civilization", path: "/civilization" },
+  { icon: Map, label: "Digital Nation", path: "/digital-nation" },
+  { icon: Users, label: "Citizen Passport", path: "/citizen-passport" },
+  // ─── MEMORY ──────────────────────────────────────────────────
+  { icon: Star, label: "Memory Constellation", path: "/memory-constellation" },
+  // ─── ANALYTICS ───────────────────────────────────────────────
+  { icon: BarChart3, label: "Analytics", path: "/enterprise-analytics" },
+  { icon: Shield, label: "Security", path: "/security" },
+  // ─── COMMUNITY ───────────────────────────────────────────────
+  { icon: Gamepad2, label: "Gaming", path: "/gaming" },
+  { icon: BookOpen, label: "Education", path: "/education" },
+  { icon: Award, label: "Governance", path: "/governance" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -46,39 +73,22 @@ export default function DashboardLayout({
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
   });
+  // OAuth disabled - allow anonymous access
   const { loading, user } = useAuth();
 
   useEffect(() => {
     localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
   }, [sidebarWidth]);
 
+  // OAuth disabled - anonymous access allowed
   if (loading) {
     return <DashboardLayoutSkeleton />
   }
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col items-center gap-8 p-8 max-w-md w-full">
-          <div className="flex flex-col items-center gap-6">
-            <h1 className="text-2xl font-semibold tracking-tight text-center">
-              Sign in to continue
-            </h1>
-            <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Access to this dashboard requires authentication. Continue to launch the login flow.
-            </p>
-          </div>
-          <Button
-            onClick={() => startLogin()}
-            size="lg"
-            className="w-full shadow-lg hover:shadow-xl transition-all"
-          >
-            Sign in
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  // Allow anonymous users to access dashboard
+  // if (!user) {
+  //   return <div>Sign in required</div>;
+  // }
 
   return (
     <SidebarProvider

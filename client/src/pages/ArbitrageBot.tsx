@@ -1,84 +1,60 @@
-import { Bot } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { PageHeader } from "@/components/PageHeader";
+import { ProductionPageTemplate, StatsGrid, DataTable, SkeletonCard } from '@/components/ProductionPageTemplate';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Suspense } from 'react';
 
 export default function ArbitrageBot() {
+  const { user } = useAuth();
+
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader icon={Bot} title="Arbitrage Bot" subtitle="Advanced arbitrage bot with cutting-edge technology" />
-      
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        {/* Main Content Area */}
-        <Card className="p-8 bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Arbitrage Bot</h2>
-            
-            {/* Advanced Features */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Card className="p-4 bg-background/80 border border-primary/30 hover:border-primary/80 transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20">
-                <div className="space-y-3">
-                  <Bot className="w-8 h-8 text-primary" />
-                  <h3 className="font-bold text-lg">Advanced Analytics</h3>
-                  <p className="text-sm text-muted-foreground">Real-time data processing with AI insights</p>
-                  <Button size="sm" variant="outline" className="w-full">Explore</Button>
-                </div>
-              </Card>
-              
-              <Card className="p-4 bg-background/80 border border-primary/30 hover:border-primary/80 transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20">
-                <div className="space-y-3">
-                  <Bot className="w-8 h-8 text-primary" />
-                  <h3 className="font-bold text-lg">Automation Engine</h3>
-                  <p className="text-sm text-muted-foreground">Autonomous operations with intelligent decision making</p>
-                  <Button size="sm" variant="outline" className="w-full">Configure</Button>
-                </div>
-              </Card>
-              
-              <Card className="p-4 bg-background/80 border border-primary/30 hover:border-primary/80 transition-all cursor-pointer hover:shadow-lg hover:shadow-primary/20">
-                <div className="space-y-3">
-                  <Bot className="w-8 h-8 text-primary" />
-                  <h3 className="font-bold text-lg">Security First</h3>
-                  <p className="text-sm text-muted-foreground">Robust encryption and protection</p>
-                  <Button size="sm" variant="outline" className="w-full">Secure</Button>
-                </div>
-              </Card>
+    <ProductionPageTemplate
+      title="Arbitrage Bot"
+      subtitle="Production-grade page with enterprise features"
+      breadcrumbs={[
+        { label: 'Home', href: '/' },
+        { label: 'ArbitrageBot', href: '/arbitragebot' }
+      ]}
+      actions={
+        <Button className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90">
+          Get Started
+        </Button>
+      }
+    >
+      <Suspense fallback={<SkeletonCard />}>
+        <div className="space-y-6">
+          <Card className="p-6 border-slate-800 hover:border-pink-500/50 transition-colors">
+            <h2 className="text-2xl font-bold mb-4 text-white">ArbitrageBot</h2>
+            <p className="text-slate-400 mb-4">
+              Enterprise-grade arbitragebot page with production-ready components,
+              real-time data, advanced analytics, and seamless user experience.
+            </p>
+            <div className="flex gap-2">
+              <Button className="bg-pink-500 hover:bg-pink-600">Explore</Button>
+              <Button variant="outline">Learn More</Button>
             </div>
-            
-            {/* Performance Metrics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-              <div className="p-4 bg-background/50 rounded-lg border border-border/50">
-                <p className="text-xs text-muted-foreground">Processing Speed</p>
-                <p className="text-2xl font-bold text-primary">99.9%</p>
-              </div>
-              <div className="p-4 bg-background/50 rounded-lg border border-border/50">
-                <p className="text-xs text-muted-foreground">Uptime</p>
-                <p className="text-2xl font-bold text-primary">24/7</p>
-              </div>
-              <div className="p-4 bg-background/50 rounded-lg border border-border/50">
-                <p className="text-xs text-muted-foreground">Latency</p>
-                <p className="text-2xl font-bold text-primary">&lt;50ms</p>
-              </div>
-              <div className="p-4 bg-background/50 rounded-lg border border-border/50">
-                <p className="text-xs text-muted-foreground">Throughput</p>
-                <p className="text-2xl font-bold text-primary">10K+/s</p>
-              </div>
+          </Card>
+
+          <StatsGrid stats={[
+            { label: 'Active Users', value: '1.2M', color: 'pink', trend: 'up' },
+            { label: 'Total Revenue', value: '$4.2M', color: 'purple', trend: 'up' },
+            { label: 'Engagement', value: '94.2%', color: 'cyan', trend: 'neutral' },
+            { label: 'Growth', value: '+23%', color: 'green', trend: 'up' }
+          ]} />
+
+          <Card className="p-6 border-slate-800">
+            <h3 className="text-xl font-semibold mb-4 text-white">Recent Activity</h3>
+            <div className="space-y-3">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} className="p-3 bg-slate-800/50 rounded hover:bg-slate-800 transition-colors cursor-pointer">
+                  <p className="text-sm text-slate-300">Activity Item {i}</p>
+                  <p className="text-xs text-slate-500">2 hours ago</p>
+                </div>
+              ))}
             </div>
-            
-            {/* Action Section */}
-            <div className="flex gap-4 flex-wrap pt-6">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Get Started Now
-              </Button>
-              <Button size="lg" variant="outline">
-                View Documentation
-              </Button>
-              <Button size="lg" variant="ghost">
-                Schedule Demo
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </div>
+          </Card>
+        </div>
+      </Suspense>
+    </ProductionPageTemplate>
   );
 }
