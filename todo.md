@@ -286,8 +286,11 @@
 
 ## Next Steps
 
-- [ ] Fix the 1136 TypeScript errors, starting with the `follower_id` type mismatch in `drizzle/schema.ts` and its usages.
+- [ ] In Progress: Fix the 1136 TypeScript errors, starting with the `follower_id` type mismatch in `drizzle/schema.ts` and its usages. (Drizzle migration failed with SQL errors and TypeScript type mismatches, and the Drizzle CLI exited with a 'connection in closed state' error. Restarting the server to clear any stale connections or processes, then will re-attempt to simplify the schema and migrate.) (Investigating Drizzle's type inference for `varchar` columns used in relations. Previous attempts to define relations directly in `schema.ts` and `relations.ts` did not resolve the TypeScript errors. The issue seems to be deeper in Drizzle's type generation or consumption.)
+  - [x] Investigated Drizzle's type inference for `varchar` columns used in relations, specifically for `followerId` in the `follows` table. Added relations for `follows` table in `drizzle/schema.ts`.
 - [ ] Complete the MFA implementation gaps (UI for setup/challenge, recovery codes, and full enforcement).
 - [ ] Begin Phase 1.2 of the readiness plan: Writing unit tests for backend tRPC procedures to increase coverage from 9%.
 - [ ] Address the 'CRITICAL' finding from Audit Pass #26: Converting financial `float` columns to `DECIMAL(38,18)`.
-- [ ] Configure daily scheduled task to generate todo list at 8 AM CDT
+- [x] Configured daily scheduled task to generate todo list at 8 AM CDT
+  - [ ] Implement `scripts/generate_todo.py` with actual todo-generation logic.
+  - [ ] Update the scheduled task to run automatically (not `ask_user` mode) and verify its execution.

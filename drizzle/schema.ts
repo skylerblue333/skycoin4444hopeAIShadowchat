@@ -1,7 +1,7 @@
-
 import { mysqlTable, varchar, text, int, float, boolean, timestamp, primaryKey } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
-import { relations } from "drizzle-orm";
+
+
 
 // ============ USERS TABLE ============
 export const users = mysqlTable("users", {
@@ -23,7 +23,7 @@ export const users = mysqlTable("users", {
 // ============ POSTS TABLE ============
 export const posts = mysqlTable("posts", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   content: varchar("content", { length: 255 }),
   media: varchar("media", { length: 255 }),
   likes: int("likes").default(0),
@@ -35,8 +35,8 @@ export const posts = mysqlTable("posts", {
 // ============ COMMENTS TABLE ============
 export const comments = mysqlTable("comments", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  postId: varchar("post_id", { length: 255 }).references(() => posts.id),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  postId: varchar("post_id", { length: 255 }),
+  userId: varchar("user_id", { length: 255 }),
   content: varchar("content", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -44,8 +44,8 @@ export const comments = mysqlTable("comments", {
 // ============ LIKES TABLE ============
 export const likes = mysqlTable("likes", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  postId: varchar("post_id", { length: 255 }).references(() => posts.id),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  postId: varchar("post_id", { length: 255 }),
+  userId: varchar("user_id", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -58,15 +58,15 @@ export const products = mysqlTable("products", {
   category: varchar("category", { length: 255 }),
   image: varchar("image", { length: 255 }),
   stock: int("stock"),
-  sellerId: varchar("seller_id", { length: 255 }).references(() => users.id),
+  sellerId: varchar("seller_id", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 // ============ ORDERS TABLE ============
 export const orders = mysqlTable("orders", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
-  productId: varchar("product_id", { length: 255 }).references(() => products.id),
+  userId: varchar("user_id", { length: 255 }),
+  productId: varchar("product_id", { length: 255 }),
   quantity: int("quantity"),
   total: float("total"),
   status: varchar("status", { length: 255 }), // pending | shipped | delivered | cancelled
@@ -77,7 +77,7 @@ export const orders = mysqlTable("orders", {
 // ============ STREAMS TABLE ============
 export const streams = mysqlTable("streams", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  streamerId: varchar("streamer_id", { length: 255 }).references(() => users.id),
+  streamerId: varchar("streamer_id", { length: 255 }),
   title: varchar("title", { length: 255 }),
   description: varchar("description", { length: 255 }),
   status: varchar("status", { length: 255 }), // live | ended | scheduled
@@ -90,10 +90,10 @@ export const streams = mysqlTable("streams", {
 // ============ TRANSACTIONS TABLE ============
 export const transactions = mysqlTable("transactions", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   type: varchar("type", { length: 255 }), // deposit | withdrawal | transfer | purchase
   amount: float("amount"),
-  toUserId: varchar("to_user_id", { length: 255 }).references(() => users.id),
+  toUserId: varchar("to_user_id", { length: 255 }),
   status: varchar("status", { length: 255 }), // pending | completed | failed
   txHash: varchar("tx_hash", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -102,7 +102,7 @@ export const transactions = mysqlTable("transactions", {
 // ============ WALLETS TABLE ============
 export const wallets = mysqlTable("wallets", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   address: varchar("address", { length: 255 }),
   balance: float("balance").default(0),
   currency: varchar("currency", { length: 255 }), // BTC | ETH | SOL | DOGE | SKY444
@@ -112,15 +112,15 @@ export const wallets = mysqlTable("wallets", {
 // ============ FOLLOWS TABLE ============
 export const follows = mysqlTable("follows", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  followerId: varchar("follower_id", { length: 255 }).references(() => users.id),
-  followingId: varchar("following_id", { length: 255 }).references(() => users.id),
+  followerId: varchar("follower_id", { length: 255 }),
+  followingId: varchar("following_id", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 // ============ NOTIFICATIONS TABLE ============
 export const notifications = mysqlTable("notifications", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   type: varchar("type", { length: 255 }), // like | comment | follow | message | order
   content: varchar("content", { length: 255 }),
   read: boolean("read").default(false),
@@ -130,8 +130,8 @@ export const notifications = mysqlTable("notifications", {
 // ============ MESSAGES TABLE ============
 export const messages = mysqlTable("messages", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  senderId: varchar("sender_id", { length: 255 }).references(() => users.id),
-  recipientId: varchar("recipient_id", { length: 255 }).references(() => users.id),
+  senderId: varchar("sender_id", { length: 255 }),
+  recipientId: varchar("recipient_id", { length: 255 }),
   content: varchar("content", { length: 255 }),
   read: boolean("read").default(false),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -140,33 +140,17 @@ export const messages = mysqlTable("messages", {
 // ============ REVIEWS TABLE ============
 export const reviews = mysqlTable("reviews", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  productId: varchar("product_id", { length: 255 }).references(() => products.id),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  productId: varchar("product_id", { length: 255 }),
+  userId: varchar("user_id", { length: 255 }),
   rating: int("rating"), // 1-5
   comment: varchar("comment", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-// ============ RELATIONS ============
-export const usersRelations = relations(users, ({ many }) => ({
-  posts: many(posts),
-  orders: many(orders),
-  products: many(products),
-  streams: many(streams),
-  wallets: many(wallets),
-}));
-
-export const postsRelations = relations(posts, ({ one, many }) => ({
-  user: one(users, { fields: [posts.userId], references: [users.id] }),
-  comments: many(comments),
-  likes: many(likes),
-}));
-
-
 // ============ AUDIT LEDGER TABLE ============
 export const auditLedger = mysqlTable("audit_ledger", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   eventType: varchar("event_type", { length: 255 }).notNull(),
   action: varchar("action", { length: 255 }).notNull(),
   details: varchar("details", { length: 255 }),
@@ -176,11 +160,10 @@ export const auditLedger = mysqlTable("audit_ledger", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-
 // ============ TOKEN BALANCES TABLE ============
 export const tokenBalances = mysqlTable("token_balances", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   tokenSymbol: varchar("token_symbol", { length: 255 }).notNull(), // BTC, ETH, SOL, DOGE, SKY444
   balance: float("balance").default(0),
   lockedBalance: float("locked_balance").default(0),
@@ -191,18 +174,17 @@ export const tokenBalances = mysqlTable("token_balances", {
 // ============ USER BEHAVIOR SIGNALS TABLE ============
 export const userBehaviorSignals = mysqlTable("user_behavior_signals", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   signalType: varchar("signal_type", { length: 255 }).notNull(), // login | purchase | post | comment | follow | etc
   value: float("value").default(0),
   metadata: varchar("metadata", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-
 // ============ DATING SYSTEM TABLES ============
 export const datingProfiles = mysqlTable("dating_profiles", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   bio: varchar("bio", { length: 255 }),
   photos: varchar("photos", { length: 255 }), // JSON array
   interests: varchar("interests", { length: 255 }), // JSON array
@@ -216,24 +198,24 @@ export const datingProfiles = mysqlTable("dating_profiles", {
 
 export const datingMatches = mysqlTable("dating_matches", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId1: varchar("user_id_1", { length: 255 }).references(() => users.id).notNull(),
-  userId2: varchar("user_id_2", { length: 255 }).references(() => users.id).notNull(),
+  userId1: varchar("user_id_1", { length: 255 }).notNull(),
+  userId2: varchar("user_id_2", { length: 255 }).notNull(),
   status: varchar("status", { length: 255 }).default("pending"), // pending | matched | rejected
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const datingLikes = mysqlTable("dating_likes", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
-  likedUserId: varchar("liked_user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  likedUserId: varchar("liked_user_id", { length: 255 }).notNull(),
   type: varchar("type", { length: 255 }).default("like"), // like | superlike
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const datingMessages = mysqlTable("dating_messages", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  matchId: varchar("match_id", { length: 255 }).references(() => datingMatches.id).notNull(),
-  senderId: varchar("sender_id", { length: 255 }).references(() => users.id).notNull(),
+  matchId: varchar("match_id", { length: 255 }).notNull(),
+  senderId: varchar("sender_id", { length: 255 }).notNull(),
   content: varchar("content", { length: 255 }).notNull(),
   read: boolean("read").default(false),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -241,7 +223,7 @@ export const datingMessages = mysqlTable("dating_messages", {
 
 export const datingSubscriptions = mysqlTable("dating_subscriptions", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   tier: varchar("tier", { length: 255 }).default("free"), // free | premium | vip
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -249,7 +231,7 @@ export const datingSubscriptions = mysqlTable("dating_subscriptions", {
 
 export const datingPreferences = mysqlTable("dating_preferences", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   minAge: int("min_age").default(18),
   maxAge: int("max_age").default(65),
   maxDistance: int("max_distance").default(50),
@@ -259,7 +241,7 @@ export const datingPreferences = mysqlTable("dating_preferences", {
 
 export const datingNotifications = mysqlTable("dating_notifications", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
   type: varchar("type", { length: 255 }).notNull(), // match | message | like
   relatedUserId: varchar("related_user_id", { length: 255 }),
   read: boolean("read").default(false),
@@ -268,16 +250,16 @@ export const datingNotifications = mysqlTable("dating_notifications", {
 
 export const datingBlocks = mysqlTable("dating_blocks", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
-  blockedUserId: varchar("blocked_user_id", { length: 255 }).references(() => users.id).notNull(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  blockedUserId: varchar("blocked_user_id", { length: 255 }).notNull(),
   reason: varchar("reason", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const datingReports = mysqlTable("dating_reports", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  reporterId: varchar("reporter_id", { length: 255 }).references(() => users.id).notNull(),
-  reportedUserId: varchar("reported_user_id", { length: 255 }).references(() => users.id).notNull(),
+  reporterId: varchar("reporter_id", { length: 255 }).notNull(),
+  reportedUserId: varchar("reported_user_id", { length: 255 }).notNull(),
   reason: varchar("reason", { length: 255 }).notNull(),
   status: varchar("status", { length: 255 }).default("pending"), // pending | reviewed | resolved
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -286,7 +268,7 @@ export const datingReports = mysqlTable("dating_reports", {
 // ============ FRAUD & SECURITY TABLES ============
 export const fraudSignals = mysqlTable("fraud_signals", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   signalType: varchar("signal_type", { length: 255 }).notNull(),
   severity: varchar("severity", { length: 255 }).default("low"), // low | medium | high | critical
   details: varchar("details", { length: 255 }),
@@ -296,7 +278,7 @@ export const fraudSignals = mysqlTable("fraud_signals", {
 
 export const rateLimitBuckets = mysqlTable("rate_limit_buckets", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id),
+  userId: varchar("user_id", { length: 255 }),
   endpoint: varchar("endpoint", { length: 255 }).notNull(),
   count: int("count").default(0),
   resetAt: timestamp("reset_at"),
@@ -305,7 +287,7 @@ export const rateLimitBuckets = mysqlTable("rate_limit_buckets", {
 // ============ WALLET & TRANSACTION TABLES ============
 export const walletTransactions = mysqlTable("wallet_transactions", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  walletId: varchar("wallet_id", { length: 255 }).references(() => wallets.id).notNull(),
+  walletId: varchar("wallet_id", { length: 255 }).notNull(),
   type: varchar("type", { length: 255 }).notNull(), // deposit | withdrawal | transfer | swap
   amount: float("amount").notNull(),
   fee: float("fee").default(0),
@@ -316,7 +298,7 @@ export const walletTransactions = mysqlTable("wallet_transactions", {
 
 export const walletAuditLog = mysqlTable("wallet_audit_log", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  walletId: varchar("wallet_id", { length: 255 }).references(() => wallets.id).notNull(),
+  walletId: varchar("wallet_id", { length: 255 }).notNull(),
   action: varchar("action", { length: 255 }).notNull(),
   details: varchar("details", { length: 255 }),
   ipAddress: varchar("ip_address", { length: 255 }),
@@ -325,89 +307,82 @@ export const walletAuditLog = mysqlTable("wallet_audit_log", {
 
 export const custodyWallets = mysqlTable("custody_wallets", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
-  provider: varchar("provider", { length: 255 }).notNull(), // coinbase | kraken | etc
-  externalId: varchar("external_id", { length: 255 }).notNull(),
-  balance: float("balance").default(0),
+  userId: varchar("user_id", { length: 255 }),
+  address: varchar("address", { length: 255 }),
+  publicKey: varchar("public_key", { length: 255 }),
+  privateKey: varchar("private_key", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const onChainTransactions = mysqlTable("on_chain_transactions", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
-  blockchain: varchar("blockchain", { length: 255 }).notNull(), // ethereum | solana | bitcoin
-  txHash: varchar("tx_hash", { length: 255 }).notNull(),
-  fromAddress: varchar("from_address", { length: 255 }),
-  toAddress: varchar("to_address", { length: 255 }),
-  amount: float("amount"),
-  status: varchar("status", { length: 255 }).default("pending"),
-  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
-
-// ============ TOKEN & ECONOMY TABLES ============
-export const tokenMarketState = mysqlTable("token_market_state", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  tokenSymbol: varchar("token_symbol", { length: 255 }).notNull(),
-  price: float("price").notNull(),
-  marketCap: float("market_cap"),
-  volume24h: float("volume_24h"),
-  circulatingSupply: float("circulating_supply"),
-  totalSupply: float("total_supply"),
-  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
-});
-
-export const tokenEmissionCaps = mysqlTable("token_emission_caps", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  tokenSymbol: varchar("token_symbol", { length: 255 }).notNull(),
-  maxEmission: float("max_emission"),
-  currentEmission: float("current_emission"),
-  emissionRate: float("emission_rate"),
-  lastAdjustedAt: timestamp("last_adjusted_at"),
-});
-
-export const userArchetypes = mysqlTable("user_archetypes", {
-  id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 255 }).references(() => users.id).notNull(),
-  archetype: varchar("archetype", { length: 255 }).notNull(), // trader | hodler | miner | creator | etc
-  score: float("score").default(0),
-  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
-});
-
-// ============ GOVERNANCE & MODERATION TABLES ============
+// ============ GOVERNANCE TABLES ============
 export const governanceProposals = mysqlTable("governance_proposals", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  proposerId: varchar("proposer_id", { length: 255 }).references(() => users.id).notNull(),
+  proposerId: varchar("proposer_id", { length: 255 }),
   title: varchar("title", { length: 255 }).notNull(),
-  description: varchar("description", { length: 255 }),
-  status: varchar("status", { length: 255 }).default("active"), // active | passed | failed | executed
-  votesFor: int("votes_for").default(0),
-  votesAgainst: int("votes_against").default(0),
+  description: text("description").notNull(),
+  status: varchar("status", { length: 255 }).default("pending"), // pending | approved | rejected | executed
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
-  expiresAt: timestamp("expires_at"),
+  votingEndsAt: timestamp("voting_ends_at").notNull(),
 });
 
 export const governanceVotes = mysqlTable("governance_votes", {
   id: varchar("id", { length: 255 }).primaryKey(),
+  // @ts-ignore
   proposalId: varchar("proposal_id", { length: 255 }).references(() => governanceProposals.id).notNull(),
-  voterId: varchar("voter_id", { length: 255 }).references(() => users.id).notNull(),
-  vote: varchar("vote", { length: 255 }).notNull(), // for | against
-  weight: float("weight").default(1),
+  voterId: varchar("voter_id", { length: 255 }).notNull(),
+  vote: varchar("vote", { length: 255 }).notNull(), // yes | no | abstain
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const moderationLogs = mysqlTable("moderation_logs", {
+// ============ ON-CHAIN TRANSACTIONS TABLE ============
+export const onChainTransactions = mysqlTable("on_chain_transactions", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  moderatorId: varchar("moderator_id", { length: 255 }).references(() => users.id),
-  targetUserId: varchar("target_user_id", { length: 255 }).references(() => users.id),
-  action: varchar("action", { length: 255 }).notNull(), // warn | mute | ban | delete
-  reason: varchar("reason", { length: 255 }),
-  duration: int("duration"), // in seconds, null for permanent
+  userId: varchar("user_id", { length: 255 }),
+  txHash: varchar("tx_hash", { length: 255 }).notNull().unique(),
+  fromAddress: varchar("from_address", { length: 255 }).notNull(),
+  toAddress: varchar("to_address", { length: 255 }).notNull(),
+  amount: float("amount").notNull(),
+  tokenSymbol: varchar("token_symbol", { length: 255 }).notNull(),
+  status: varchar("status", { length: 255 }).default("pending"), // pending | confirmed | failed
+  blockNumber: int("block_number"),
+  gasUsed: float("gas_used"),
+  gasPrice: float("gas_price"),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
+// ============ PLATFORM METRICS TABLE ============
 export const platformMetrics = mysqlTable("platform_metrics", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  metricType: varchar("metric_type", { length: 255 }).notNull(), // dau | mau | tvl | volume
+  metricName: varchar("metric_name", { length: 255 }).notNull(),
   value: float("value").notNull(),
-  timestamp: timestamp("timestamp").default(new Date()),
+  timestamp: timestamp("timestamp").default(sql`CURRENT_TIMESTAMP`),
+  metadata: varchar("metadata", { length: 255 }),
+});
+
+// ============ TOKEN EMISSION CAPS TABLE ============
+export const tokenEmissionCaps = mysqlTable("token_emission_caps", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  tokenSymbol: varchar("token_symbol", { length: 255 }).notNull().unique(),
+  dailyCap: float("daily_cap").notNull(),
+  currentDayEmission: float("current_day_emission").default(0),
+  lastReset: timestamp("last_reset").default(sql`CURRENT_TIMESTAMP`),
+});
+
+// ============ TOKEN MARKET STATE TABLE ============
+export const tokenMarketState = mysqlTable("token_market_state", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  tokenSymbol: varchar("token_symbol", { length: 255 }).notNull().unique(),
+  priceUSD: float("price_usd").notNull(),
+  marketCapUSD: float("market_cap_usd").notNull(),
+  volume24hUSD: float("volume_24h_usd").notNull(),
+  lastUpdated: timestamp("last_updated").default(sql`CURRENT_TIMESTAMP`),
+});
+
+// ============ USER ARCHETYPES TABLE ============
+export const userArchetypes = mysqlTable("user_archetypes", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 255 }),
+  archetype: varchar("archetype", { length: 255 }).notNull(), // e.g., "early_adopter", "gamer", "trader"
+  score: float("score").default(0),
+  lastEvaluated: timestamp("last_evaluated").default(sql`CURRENT_TIMESTAMP`),
 });

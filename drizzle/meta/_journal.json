@@ -15,6 +15,34 @@
       "when": 1783538022567,
       "tag": "0001_soft_raza",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1783540850181,
+      "tag": "0002_shocking_bulldozer",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1783540879857,
+      "tag": "0003_young_lockheed",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1783542229030,
+      "tag": "0004_perpetual_madame_masque",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1783543609669,
+      "tag": "0005_nebulous_katie_power",
+      "breakpoints": true
     }
   ]
 }
