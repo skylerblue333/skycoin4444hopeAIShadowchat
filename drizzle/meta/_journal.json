@@ -43,6 +43,13 @@
       "when": 1783543609669,
       "tag": "0005_nebulous_katie_power",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1783546411633,
+      "tag": "0006_nice_bishop",
+      "breakpoints": true
     }
   ]
 }

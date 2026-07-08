@@ -385,3 +385,40 @@ export const userArchetypes = mysqlTable("user_archetypes", {
   score: float("score").default(0),
   lastEvaluated: timestamp("last_evaluated").default(sql`CURRENT_TIMESTAMP`),
 });
+
+// ============ SPRINT MANAGEMENT TABLES ============
+export const codebaseSprints = mysqlTable("codebase_sprints", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  sprintNumber: int("sprint_number").notNull().unique(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 255 }).default("planning"), // planning | active | completed | archived
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  goals: text("goals"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const sprintTasks = mysqlTable("sprint_tasks", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  sprintId: varchar("sprint_id", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  assigneeId: varchar("assignee_id", { length: 255 }),
+  status: varchar("status", { length: 255 }).default("todo"), // todo | in_progress | review | done
+  priority: varchar("priority", { length: 255 }).default("medium"), // low | medium | high | critical
+  estimatedHours: int("estimated_hours"),
+  actualHours: int("actual_hours"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const sprintMetrics = mysqlTable("sprint_metrics", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  sprintId: varchar("sprint_id", { length: 255 }).notNull(),
+  metricName: varchar("metric_name", { length: 255 }).notNull(),
+  metricValue: float("metric_value").notNull(),
+  metricUnit: varchar("metric_unit", { length: 255 }),
+  recordedAt: timestamp("recorded_at").default(sql`CURRENT_TIMESTAMP`),
+});

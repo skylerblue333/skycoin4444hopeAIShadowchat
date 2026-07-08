@@ -38,7 +38,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingProfiles)
         .values(profile)
-        .returning();
+        ;
 
       expect(result).toHaveLength(1);
       expect(result[0].userId).toBe(testUserId1);
@@ -58,13 +58,13 @@ describe('Dating System', () => {
       const inserted = await db
         .insert(datingProfiles)
         .values(profile)
-        .returning();
+        ;
 
       const updated = await db
         .update(datingProfiles)
         .set({ bio: 'Updated bio', age: 29 })
         .where(eq(datingProfiles.id, inserted[0].id))
-        .returning();
+        ;
 
       expect(updated[0].bio).toBe('Updated bio');
       expect(updated[0].age).toBe(29);
@@ -87,7 +87,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingProfiles)
         .values(profile)
-        .returning();
+        ;
 
       // Profile completeness should be calculated based on filled fields
       const filledFields = Object.values(profile).filter(v => v !== null && v !== undefined && v !== '').length;
@@ -110,7 +110,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingMatches)
         .values(match)
-        .returning();
+        ;
 
       expect(result).toHaveLength(1);
       expect(result[0].matchType).toBe('like');
@@ -137,7 +137,7 @@ describe('Dating System', () => {
           matchType: 'mutual_like',
           isMutual: true,
         })
-        .returning();
+        ;
 
       expect(mutualMatch[0].isMutual).toBe(true);
       expect(mutualMatch[0].matchType).toBe('mutual_like');
@@ -154,7 +154,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingMatches)
         .values(match)
-        .returning();
+        ;
 
       expect(result[0].matchType).toBe('superlike');
     });
@@ -175,7 +175,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingMessages)
         .values(message)
-        .returning();
+        ;
 
       expect(result).toHaveLength(1);
       expect(result[0].content).toBe('Hello, how are you?');
@@ -230,7 +230,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingSubscriptions)
         .values(subscription)
-        .returning();
+        ;
 
       expect(result).toHaveLength(1);
       expect(result[0].tier).toBe('premium');
@@ -247,14 +247,14 @@ describe('Dating System', () => {
           status: 'active',
           price: 9.99,
         })
-        .returning();
+        ;
 
       // Upgrade to VIP
       const upgraded = await db
         .update(datingSubscriptions)
         .set({ tier: 'vip', price: 24.99 })
         .where(eq(datingSubscriptions.id, initial[0].id))
-        .returning();
+        ;
 
       expect(upgraded[0].tier).toBe('vip');
       expect(upgraded[0].price).toBe(24.99);
@@ -269,13 +269,13 @@ describe('Dating System', () => {
           status: 'active',
           price: 9.99,
         })
-        .returning();
+        ;
 
       const cancelled = await db
         .update(datingSubscriptions)
         .set({ status: 'cancelled' })
         .where(eq(datingSubscriptions.id, subscription[0].id))
-        .returning();
+        ;
 
       expect(cancelled[0].status).toBe('cancelled');
     });
@@ -294,7 +294,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingNotifications)
         .values(notification)
-        .returning();
+        ;
 
       expect(result).toHaveLength(1);
       expect(result[0].type).toBe('match');
@@ -310,13 +310,13 @@ describe('Dating System', () => {
           content: 'New message',
           read: false,
         })
-        .returning();
+        ;
 
       const marked = await db
         .update(datingNotifications)
         .set({ read: true })
         .where(eq(datingNotifications.id, notification[0].id))
-        .returning();
+        ;
 
       expect(marked[0].read).toBe(true);
     });
@@ -369,7 +369,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingLikes)
         .values(like)
-        .returning();
+        ;
 
       expect(result).toHaveLength(1);
       expect(result[0].type).toBe('like');
@@ -385,7 +385,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingLikes)
         .values(superlike)
-        .returning();
+        ;
 
       expect(result[0].type).toBe('superlike');
     });
@@ -400,7 +400,7 @@ describe('Dating System', () => {
       const result = await db
         .insert(datingLikes)
         .values(pass)
-        .returning();
+        ;
 
       expect(result[0].type).toBe('pass');
     });
