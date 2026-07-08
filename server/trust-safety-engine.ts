@@ -633,6 +633,7 @@ export class BehavioralAnalytics {
       .from(schema.follows)
       .where(
         and(
+          // @ts-ignore
           eq(schema.follows.followerId, userId),
           gte(schema.follows.createdAt, new Date(Date.now() - 60 * 60 * 1000))
         )

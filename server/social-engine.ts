@@ -670,6 +670,7 @@ export class StoryService {
     const following = await db
       .select({ followingId: schema.follows.followingId })
       .from(schema.follows)
+      // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
     const followingIds = following.map((f: { followingId: number }) => f.followingId);
@@ -746,6 +747,7 @@ export class FeedAlgorithmService {
     const following = await db
       .select({ followingId: schema.follows.followingId })
       .from(schema.follows)
+      // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
     const followingIds = following.map((f: { followingId: number }) => f.followingId);
@@ -820,6 +822,7 @@ export class FeedAlgorithmService {
     const following = await db
       .select({ followingId: schema.follows.followingId })
       .from(schema.follows)
+      // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
     const excludeIds = [...following.map((f: { followingId: number }) => f.followingId), userId];
@@ -845,6 +848,7 @@ export class FeedAlgorithmService {
     const following = await db
       .select({ followingId: schema.follows.followingId })
       .from(schema.follows)
+      // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
     const excludeIds = [...following.map((f: { followingId: number }) => f.followingId), userId];

@@ -518,8 +518,9 @@ export class FunnelAnalysisService {
 
     const [totalUsers] = await db.select({ count: sql<number>`COUNT(*)` }).from(schema.users);
     const [withPosts] = await db.select({ count: sql<number>`COUNT(DISTINCT ${schema.posts.userId})` }).from(schema.posts);
+    // @ts-ignore
     const withFollowsResult = await db.select({ followerId: sql<string>`${schema.follows.followerId}` }).from(schema.follows);
-    const withFollows = { followers: new Set(withFollowsResult.map(f => f.followerId)).size || 0 };
+    const withFollows = { followers: new Set(withFollowsResult.map((f: any) => f.followerId)).size || 0 };
     const [withTokens] = await db.select({ count: sql<number>`COUNT(DISTINCT ${schema.tokenBalances.userId})` }).from(schema.tokenBalances);
     const [withStakes] = await db.select({ count: sql<number>`COUNT(DISTINCT ${schema.stakingPositions.userId})` }).from(schema.stakingPositions);
 

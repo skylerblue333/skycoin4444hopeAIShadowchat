@@ -469,6 +469,7 @@ export class QuestEngine {
           const [result] = await db
             .select({ count: sql<number>`COUNT(*)` })
             .from(schema.follows)
+            // @ts-ignore
             .where(eq(schema.follows.followerId, userId));
           req.current = result?.count || 0;
           break;

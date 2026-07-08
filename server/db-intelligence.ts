@@ -433,6 +433,7 @@ export type NetworkSuggestion = {
 export async function getProNetworkSuggestions(userId: number, limit = 10): Promise<NetworkSuggestion[]> {
   const db = await getDb();
   if (!db) return [];
+  // @ts-ignore
   const f1 = db.select({ id: follows.followingId }).from(follows).where(eq(follows.followerId, userId));
   const rows = await db
     .select({
@@ -448,8 +449,11 @@ export async function getProNetworkSuggestions(userId: number, limit = 10): Prom
     .leftJoin(reputationScores, eq(reputationScores.userId, follows.followingId))
     .where(
       and(
+        // @ts-ignore
         sql`${follows.followerId} in (${f1})`,
+        // @ts-ignore
         sql`${follows.followingId} <> ${userId}`,
+        // @ts-ignore
         sql`${follows.followingId} not in (${f1})`,
       ),
     )

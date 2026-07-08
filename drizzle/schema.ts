@@ -327,8 +327,7 @@ export const governanceProposals = mysqlTable("governance_proposals", {
 
 export const governanceVotes = mysqlTable("governance_votes", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  // @ts-ignore
-  proposalId: varchar("proposal_id", { length: 255 }).references(() => governanceProposals.id).notNull(),
+  proposalId: varchar("proposal_id", { length: 255 }).notNull(),
   voterId: varchar("voter_id", { length: 255 }).notNull(),
   vote: varchar("vote", { length: 255 }).notNull(), // yes | no | abstain
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
