@@ -45,20 +45,15 @@ export const authRouter = router({
       const passwordMatch = await bcrypt.compare(input.password, user.password || "");
       if (!passwordMatch) throw new Error("Invalid email or password");
 
-      // if (user.mfaEnabled) {
-      //   if (!input.mfaToken) {
-      //     return { user: null, token: null, mfaRequired: true };
-      //   }
-      //   const isValidMfa = await verifyMfaToken(user.id, input.mfaToken);
-      //   if (!isValidMfa) {
-      //     throw new Error("Invalid MFA token");
-      //   }
-      // }
-      
-      // if (user.mfaEnabled) {
-      //   // If MFA is enabled, return a flag to the frontend to prompt for MFA token
-      //   return { user, token: null, mfaRequired: true };
-      // }
+      if (user.mfaEnabled) {
+        if (!input.mfaToken) {
+          return { user: null, token: null, mfaRequired: true };
+        }
+        const isValidMfa = await verifyMfaToken(user.id, input.mfaToken);
+        if (!isValidMfa) {
+          throw new Error("Invalid MFA token");
+        }
+      }
 
       const token = await sdk.createSessionToken(user);
       ctx.res.setHeader("Set-Cookie", `session=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800`);

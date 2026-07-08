@@ -50,6 +50,20 @@
       "when": 1783546411633,
       "tag": "0006_nice_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1783551595320,
+      "tag": "0007_shiny_moonstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1783551735796,
+      "tag": "0008_open_midnight",
+      "breakpoints": true
     }
   ]
 }

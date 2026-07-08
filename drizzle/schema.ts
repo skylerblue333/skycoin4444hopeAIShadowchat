@@ -1,4 +1,4 @@
-import { mysqlTable, varchar, text, int, float, boolean, timestamp, primaryKey } from "drizzle-orm/mysql-core";
+import { mysqlTable, varchar, decimal, int, boolean, timestamp, text } from "drizzle-orm/mysql-core";
 import { sql } from "drizzle-orm";
 
 
@@ -11,7 +11,7 @@ export const users = mysqlTable("users", {
   name: varchar("name", { length: 255 }),
   bio: varchar("bio", { length: 255 }),
   avatar: varchar("avatar", { length: 255 }),
-  balance: float("balance").default(0),
+  balance: decimal("balance", { precision: 38, scale: 18 }).default(0),
   role: varchar("role", { length: 255 }).default("user"), // user | creator | merchant | moderator | admin | treasury
   mfaSecret: varchar("mfa_secret", { length: 255 }),
   mfaEnabled: boolean("mfa_enabled").default(false),
@@ -54,7 +54,7 @@ export const products = mysqlTable("products", {
   id: varchar("id", { length: 255 }).primaryKey(),
   name: varchar("name", { length: 255 }),
   description: varchar("description", { length: 255 }),
-  price: float("price"),
+  price: decimal("price", { precision: 38, scale: 18 }),
   category: varchar("category", { length: 255 }),
   image: varchar("image", { length: 255 }),
   stock: int("stock"),
@@ -68,7 +68,7 @@ export const orders = mysqlTable("orders", {
   userId: varchar("user_id", { length: 255 }),
   productId: varchar("product_id", { length: 255 }),
   quantity: int("quantity"),
-  total: float("total"),
+  total: decimal("total", { precision: 38, scale: 18 }),
   status: varchar("status", { length: 255 }), // pending | shipped | delivered | cancelled
   shippingAddress: varchar("shipping_address", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -92,7 +92,7 @@ export const transactions = mysqlTable("transactions", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 255 }),
   type: varchar("type", { length: 255 }), // deposit | withdrawal | transfer | purchase
-  amount: float("amount"),
+  amount: decimal("amount", { precision: 38, scale: 18 }),
   toUserId: varchar("to_user_id", { length: 255 }),
   status: varchar("status", { length: 255 }), // pending | completed | failed
   txHash: varchar("tx_hash", { length: 255 }),
@@ -104,7 +104,7 @@ export const wallets = mysqlTable("wallets", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 255 }),
   address: varchar("address", { length: 255 }),
-  balance: float("balance").default(0),
+  balance: decimal("balance", { precision: 38, scale: 18 }).default(0),
   currency: varchar("currency", { length: 255 }), // BTC | ETH | SOL | DOGE | SKY444
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -165,9 +165,9 @@ export const tokenBalances = mysqlTable("token_balances", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 255 }).notNull(),
   tokenSymbol: varchar("token_symbol", { length: 255 }).notNull(), // BTC, ETH, SOL, DOGE, SKY444
-  balance: float("balance").default(0),
-  lockedBalance: float("locked_balance").default(0),
-  stakedBalance: float("staked_balance").default(0),
+  balance: decimal("balance", { precision: 38, scale: 18 }).default(0),
+  lockedBalance: decimal("locked_balance", { precision: 38, scale: 18 }).default(0),
+  stakedBalance: decimal("staked_balance", { precision: 38, scale: 18 }).default(0),
   updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -176,7 +176,7 @@ export const userBehaviorSignals = mysqlTable("user_behavior_signals", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 255 }).notNull(),
   signalType: varchar("signal_type", { length: 255 }).notNull(), // login | purchase | post | comment | follow | etc
-  value: float("value").default(0),
+  value: decimal("value", { precision: 38, scale: 18 }).default(0),
   metadata: varchar("metadata", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -289,8 +289,8 @@ export const walletTransactions = mysqlTable("wallet_transactions", {
   id: varchar("id", { length: 255 }).primaryKey(),
   walletId: varchar("wallet_id", { length: 255 }).notNull(),
   type: varchar("type", { length: 255 }).notNull(), // deposit | withdrawal | transfer | swap
-  amount: float("amount").notNull(),
-  fee: float("fee").default(0),
+  amount: decimal("amount", { precision: 38, scale: 18 }).notNull(),
+  fee: decimal("fee", { precision: 38, scale: 18 }).default(0),
   status: varchar("status", { length: 255 }).default("pending"), // pending | confirmed | failed
   txHash: varchar("tx_hash", { length: 255 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -340,12 +340,12 @@ export const onChainTransactions = mysqlTable("on_chain_transactions", {
   txHash: varchar("tx_hash", { length: 255 }).notNull().unique(),
   fromAddress: varchar("from_address", { length: 255 }).notNull(),
   toAddress: varchar("to_address", { length: 255 }).notNull(),
-  amount: float("amount").notNull(),
+  amount: decimal("amount", { precision: 38, scale: 18 }).notNull(),
   tokenSymbol: varchar("token_symbol", { length: 255 }).notNull(),
   status: varchar("status", { length: 255 }).default("pending"), // pending | confirmed | failed
   blockNumber: int("block_number"),
-  gasUsed: float("gas_used"),
-  gasPrice: float("gas_price"),
+  gasUsed: decimal("gas_used", { precision: 38, scale: 18 }),
+  gasPrice: decimal("gas_price", { precision: 38, scale: 18 }),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -353,7 +353,7 @@ export const onChainTransactions = mysqlTable("on_chain_transactions", {
 export const platformMetrics = mysqlTable("platform_metrics", {
   id: varchar("id", { length: 255 }).primaryKey(),
   metricName: varchar("metric_name", { length: 255 }).notNull(),
-  value: float("value").notNull(),
+  value: decimal("value", { precision: 38, scale: 18 }).notNull(),
   timestamp: timestamp("timestamp").default(sql`CURRENT_TIMESTAMP`),
   metadata: varchar("metadata", { length: 255 }),
 });
@@ -362,8 +362,8 @@ export const platformMetrics = mysqlTable("platform_metrics", {
 export const tokenEmissionCaps = mysqlTable("token_emission_caps", {
   id: varchar("id", { length: 255 }).primaryKey(),
   tokenSymbol: varchar("token_symbol", { length: 255 }).notNull().unique(),
-  dailyCap: float("daily_cap").notNull(),
-  currentDayEmission: float("current_day_emission").default(0),
+  dailyCap: decimal("daily_cap", { precision: 38, scale: 18 }).notNull(),
+  currentDayEmission: decimal("current_day_emission", { precision: 38, scale: 18 }).default(0),
   lastReset: timestamp("last_reset").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -371,9 +371,9 @@ export const tokenEmissionCaps = mysqlTable("token_emission_caps", {
 export const tokenMarketState = mysqlTable("token_market_state", {
   id: varchar("id", { length: 255 }).primaryKey(),
   tokenSymbol: varchar("token_symbol", { length: 255 }).notNull().unique(),
-  priceUSD: float("price_usd").notNull(),
-  marketCapUSD: float("market_cap_usd").notNull(),
-  volume24hUSD: float("volume_24h_usd").notNull(),
+  priceUSD: decimal("price_usd", { precision: 38, scale: 18 }).notNull(),
+  marketCapUSD: decimal("market_cap_usd", { precision: 38, scale: 18 }).notNull(),
+  volume24hUSD: decimal("volume_24h_usd", { precision: 38, scale: 18 }).notNull(),
   lastUpdated: timestamp("last_updated").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -382,7 +382,7 @@ export const userArchetypes = mysqlTable("user_archetypes", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 255 }),
   archetype: varchar("archetype", { length: 255 }).notNull(), // e.g., "early_adopter", "gamer", "trader"
-  score: float("score").default(0),
+  score: decimal("score").default(0),
   lastEvaluated: timestamp("last_evaluated").default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -418,7 +418,17 @@ export const sprintMetrics = mysqlTable("sprint_metrics", {
   id: varchar("id", { length: 255 }).primaryKey(),
   sprintId: varchar("sprint_id", { length: 255 }).notNull(),
   metricName: varchar("metric_name", { length: 255 }).notNull(),
-  metricValue: float("metric_value").notNull(),
+  metricValue: decimal("metric_value").notNull(),
   metricUnit: varchar("metric_unit", { length: 255 }),
   recordedAt: timestamp("recorded_at").default(sql`CURRENT_TIMESTAMP`),
+});
+
+// ============ MFA RECOVERY CODES TABLE ============
+export const mfaRecoveryCodes = mysqlTable("mfa_recovery_codes", {
+  id: varchar("id", { length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull(),
+  code: varchar("code", { length: 255 }).notNull(),
+  used: boolean("used").default(false),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });

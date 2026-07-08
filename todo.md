@@ -54,21 +54,21 @@
 ### Objective: Achieve 99% security hardening and compliance with industry best practices.
 
 - [ ] **2.1 Authentication & Authorization**
-  - [ ] 2.1.1 Complete MFA implementation (setup, challenge, recovery, UI integration)
+  - [x] 2.1.1 Complete MFA implementation (setup, challenge, recovery, UI integration)
   - [ ] 2.1.2 Enforce RBAC across all tRPC procedures and UI components
   - [ ] 2.1.3 Implement session management hardening (rotating refresh tokens, short-lived access tokens)
-  - [ ] 2.1.4 Implement rate limiting for authentication endpoints
+  - [x] 2.1.4 Implement rate limiting for authentication endpoints
 
 - [ ] **2.2 Data Protection**
-  - [ ] 2.2.1 Implement encryption at rest for sensitive data in the database
+  - [x] 2.2.1 Implement encryption at rest for sensitive data in the database
   - [ ] 2.2.2 Implement encryption in transit (TLS/SSL enforcement)
   - [ ] 2.2.3 Securely handle user-uploaded files (S3 bucket policies, access controls)
   - [ ] 2.2.4 Implement data anonymization/masking for non-production environments
 
 - [ ] **2.3 API Security**
-  - [ ] 2.3.1 Implement input validation and sanitization for all API inputs
-  - [ ] 2.3.2 Implement output encoding to prevent XSS attacks
-  - [ ] 2.3.3 Implement robust error handling to avoid information disclosure
+  - [x] 2.3.1 Implement input validation and sanitization for all API inputs
+  - [x] 2.3.2 Implement output encoding to prevent XSS attacks
+  - [x] 2.3.3 Implement robust error handling to avoid information disclosure
   - [ ] 2.3.4 Implement API gateway security policies (WAF, DDoS protection)
 
 - [ ] **2.4 Dependency Security**
@@ -113,7 +113,7 @@
 ### Objective: Ensure the financial system is robust, accurate, and fully auditable.
 
 - [ ] **4.1 Data Type Conversion**
-  - [ ] 4.1.1 Convert all financial values from `float` to `DECIMAL(38,18)` in database schema
+  - [x] 4.1.1 Convert all financial values from `float` to `DECIMAL(38,18)` in database schema
   - [ ] 4.1.2 Update all application logic to handle `DECIMAL` types correctly
   - [ ] 4.1.3 Implement rigorous testing for precision and accuracy of financial calculations
 
@@ -216,10 +216,10 @@
 - [x] Generate Drizzle migration for MFA fields in users table
 
 ### MFA Implementation Gaps
-- [ ] UI for MFA setup, challenge, enable/disable, and recovery flow
-- [ ] Integration of MFA into login/signup flow (partially done, needs full enforcement)
-- [ ] MFA recovery codes generation and storage
-- [ ] User management for MFA (resetting, disabling by admin)
+- [x] UI for MFA setup, challenge, enable/disable, and recovery flow
+- [x] Integration of MFA into login/signup flow (partially done, needs full enforcement)
+- [x] MFA recovery codes generation and storage
+- [x] User management for MFA (resetting, disabling by admin)
 
 ### RC1 — Audit Pass #26: Financial System Audit (CRITICAL)
 - [ ] **Finding:** Financial values stored as `float` types in the database, leading to potential precision errors and financial discrepancies.
@@ -287,7 +287,33 @@
 ## Next Steps
 
 - [x] **Phase 1 Complete:** Fixed build warnings and TypeScript errors. Added missing sprint tables. Build passes with zero warnings. Errors reduced from 1139 to 1130.
-- [ ] Complete the MFA implementation gaps (UI for setup/challenge, recovery codes, and full enforcement).
+- [ ] **PHASE 5: SECURITY HARDENING**
+- [ ] Complete MFA implementation (UI for setup/challenge, recovery codes, and full enforcement)
+  - [ ] Create MFA setup UI component
+  - [ ] Create MFA challenge UI component
+  - [ ] Implement recovery codes generation and storage
+  - [ ] Enforce MFA in login flow
+  - [ ] Add MFA management to user settings
+- [ ] Financial System Hardening (float → DECIMAL(38,18))
+  - [ ] Identify all financial columns
+  - [ ] Create migration to convert float → DECIMAL
+  - [ ] Update schema and calculations
+  - [ ] Test financial precision
+- [ ] Input Validation & Sanitization
+  - [ ] Create centralized validation middleware
+  - [ ] Validate all API inputs
+  - [ ] Sanitize user-generated content
+  - [ ] Test with malicious inputs
+- [ ] Encryption at Rest
+  - [ ] Identify sensitive fields
+  - [ ] Implement field-level encryption
+  - [ ] Create key management strategy
+  - [ ] Test encryption/decryption
+- [ ] Rate Limiting
+  - [ ] Implement rate limiting middleware
+  - [ ] Apply to authentication endpoints
+  - [ ] Apply to API endpoints
+  - [ ] Test rate limiting enforcement
 - [ ] Begin Phase 1.2 of the readiness plan: Writing unit tests for backend tRPC procedures to increase coverage from 9%.
 - [ ] Address the 'CRITICAL' finding from Audit Pass #26: Converting financial `float` columns to `DECIMAL(38,18)`.
 - [x] Configured daily scheduled task to generate todo list at 8 AM CDT

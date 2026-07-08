@@ -64,6 +64,9 @@ import Generators from './pages/Generators';
 import AdminUsers from './pages/AdminUsers';
 import AdminSettings from './pages/AdminSettings';
 import AdminReports from './pages/AdminReports';
+import { MFASetup } from './pages/MFASetup';
+import { MFAChallengePage } from './pages/MFAChallenge';
+import { MFASettings } from './pages/MFASettings';
 
 const AITrading = lazy(() => import('./pages/AITrading'));
 const CryptoAIDashboard = lazy(() => import('./pages/CryptoAIDashboard'));
@@ -2212,6 +2215,9 @@ export default function App() {
           <Route path="/admin-users" component={AdminUsers} />
           <Route path="/admin-settings" component={AdminSettings} />
           <Route path="/admin-reports" component={AdminReports} />
+          <Route path="/mfa-setup" component={MFASetup} />
+          <Route path="/mfa-challenge" component={MFAChallengePage} />
+          <Route path="/mfa-settings" component={MFASettings} />
           <Route path="/" component={Home} />
           <Route component={NotFound} />
                 </Switch>
