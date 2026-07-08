@@ -4,6 +4,8 @@ import { sdk } from "./_core/sdk";
 import bcrypt from "bcrypt";
 import { miningRouter } from "./mining";
 import { voiceRouter } from "./voice-router";
+import { mfaRouter } from "./routers/mfa";
+// import { verifyMfaToken } from "./auth/mfa/setup";
 import { enterpriseRouter } from "./enterprise-router";
 import { aiRouter } from "./real-ai-engine-v2";
 import * as db from "./db";
@@ -25,22 +27,42 @@ export const authRouter = router({
         name: input.name || input.email.split("@")[0],
       });
       
+      // if (user.mfaEnabled) {
+      //   // If MFA is enabled, return a flag to the frontend to prompt for MFA token
+      //   return { user, token: null, mfaRequired: true };
+      // }
+
       const token = await sdk.createSessionToken(user);
       ctx.res.setHeader("Set-Cookie", `session=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800`);
-      return { user, token };
+      return { user, token, mfaRequired: false };
     }),
   login: publicProcedure
-    .input(z.object({ email: z.string().email(), password: z.string() }))
+    .input(z.object({ email: z.string().email(), password: z.string(), mfaToken: z.string().optional() }))
     .mutation(async ({ input, ctx }) => {
       const user = await db.getUserByEmail(input.email);
       if (!user) throw new Error("Invalid email or password");
       
       const passwordMatch = await bcrypt.compare(input.password, user.password || "");
       if (!passwordMatch) throw new Error("Invalid email or password");
+
+      // if (user.mfaEnabled) {
+      //   if (!input.mfaToken) {
+      //     return { user: null, token: null, mfaRequired: true };
+      //   }
+      //   const isValidMfa = await verifyMfaToken(user.id, input.mfaToken);
+      //   if (!isValidMfa) {
+      //     throw new Error("Invalid MFA token");
+      //   }
+      // }
       
+      // if (user.mfaEnabled) {
+      //   // If MFA is enabled, return a flag to the frontend to prompt for MFA token
+      //   return { user, token: null, mfaRequired: true };
+      // }
+
       const token = await sdk.createSessionToken(user);
       ctx.res.setHeader("Set-Cookie", `session=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800`);
-      return { user, token };
+      return { user, token, mfaRequired: false };
     }),
   logout: protectedProcedure.mutation(async ({ ctx }) => {
     ctx.res.setHeader("Set-Cookie", `session=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`);
@@ -290,6 +312,7 @@ export const appRouter = router({
   enterprise: enterpriseRouter,
   ai: aiRouter,
   gamefi: gameFiRouter,
+  mfa: mfaRouter,
 });
 
 export type AppRouter = typeof appRouter;

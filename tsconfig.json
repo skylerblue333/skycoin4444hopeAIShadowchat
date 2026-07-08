@@ -34,5 +34,6 @@
     }
   },
   "include": ["client", "server", "shared"],
+  "exclude": ["**/*.test.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

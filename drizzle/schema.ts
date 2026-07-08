@@ -12,7 +12,9 @@ export const users = mysqlTable("users", {
   bio: varchar("bio", { length: 255 }),
   avatar: varchar("avatar", { length: 255 }),
   balance: float("balance").default(0),
-  role: varchar("role", { length: 255 }).default("user"), // admin | user
+  role: varchar("role", { length: 255 }).default("user"), // user | creator | merchant | moderator | admin | treasury
+  mfaSecret: varchar("mfa_secret", { length: 255 }),
+  mfaEnabled: boolean("mfa_enabled").default(false),
   verified: boolean("verified").default(false),
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp("updated_at").default(sql`CURRENT_TIMESTAMP`),

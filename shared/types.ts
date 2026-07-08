@@ -5,3 +5,5 @@
 
 export type * from "../drizzle/schema";
 export * from "./_core/errors";
+
+export type UserRole = 'user' | 'creator' | 'merchant' | 'moderator' | 'admin' | 'treasury';
