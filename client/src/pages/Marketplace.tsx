@@ -1,4 +1,4 @@
-import { ProductionPageTemplate, StatsGrid, DataTable, SkeletonCard } from '@/components/ProductionPageTemplate';
+import { ProductionPageTemplate, StatsGrid, SkeletonCard } from '@/components/ProductionPageTemplate';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,43 +16,31 @@ export default function Marketplace() {
         { label: 'Marketplace', href: '/marketplace' }
       ]}
       actions={
-        <Button className="bg-gradient-to-r from-pink-500 to-purple-500 hover:opacity-90">
+        <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90">
           Get Started
         </Button>
       }
     >
       <Suspense fallback={<SkeletonCard />}>
         <div className="space-y-6">
-          <Card className="p-6 border-slate-800 hover:border-pink-500/50 transition-colors">
+          <Card className="p-6 border-slate-800 hover:border-blue-500/50 transition-colors">
             <h2 className="text-2xl font-bold mb-4 text-white">Marketplace</h2>
             <p className="text-slate-400 mb-4">
-              Enterprise-grade marketplace page with production-ready components,
+              Enterprise-grade Marketplace page with production-ready components,
               real-time data, advanced analytics, and seamless user experience.
             </p>
             <div className="flex gap-2">
-              <Button className="bg-pink-500 hover:bg-pink-600">Explore</Button>
+              <Button className="bg-blue-500 hover:bg-blue-600">Explore</Button>
               <Button variant="outline">Learn More</Button>
             </div>
           </Card>
 
           <StatsGrid stats={[
-            { label: 'Active Users', value: '1.2M', color: 'pink', trend: 'up' },
-            { label: 'Total Revenue', value: '$4.2M', color: 'purple', trend: 'up' },
+            { label: 'Active Users', value: '1.2M', color: 'blue', trend: 'up' },
+            { label: 'Total Value', value: '$4.2M', color: 'blue', trend: 'up' },
             { label: 'Engagement', value: '94.2%', color: 'cyan', trend: 'neutral' },
             { label: 'Growth', value: '+23%', color: 'green', trend: 'up' }
           ]} />
-
-          <Card className="p-6 border-slate-800">
-            <h3 className="text-xl font-semibold mb-4 text-white">Recent Activity</h3>
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="p-3 bg-slate-800/50 rounded hover:bg-slate-800 transition-colors cursor-pointer">
-                  <p className="text-sm text-slate-300">Activity Item {i}</p>
-                  <p className="text-xs text-slate-500">2 hours ago</p>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
       </Suspense>
     </ProductionPageTemplate>

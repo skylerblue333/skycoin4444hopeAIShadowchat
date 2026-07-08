@@ -29,9 +29,45 @@ const AIModerationQueue = lazy(() => import('./pages/AIModerationQueue'));
 const AIPersonaFeed = lazy(() => import('./pages/AIPersonaFeed'));
 const AIPersonaSystem = lazy(() => import('./pages/AIPersonaSystem'));
 const AIToolsHub = lazy(() => import('./pages/AIToolsHub'));
+import Trading from './pages/Trading';
+import Portfolio from './pages/Portfolio';
+import Stocks from './pages/Stocks';
+import Wallet from './pages/Wallet';
+import Mining from './pages/Mining';
+import SocialFeed from './pages/SocialFeed';
+import Profiles from './pages/Profiles';
+import Messaging from './pages/Messaging';
+import Communities from './pages/Communities';
+import Games from './pages/Games';
+import Leaderboard from './pages/Leaderboard';
+import Tournaments from './pages/Tournaments';
+import Rewards from './pages/Rewards';
+import Marketplace from './pages/Marketplace';
+import Orders from './pages/Orders';
+import Auctions from './pages/Auctions';
+import Courses from './pages/Courses';
+import Tutorials from './pages/Tutorials';
+import Certifications from './pages/Certifications';
+import Resources from './pages/Resources';
+import CreatorDashboard from './pages/CreatorDashboard';
+import CreatorAnalytics from './pages/CreatorAnalytics';
+import Monetization from './pages/Monetization';
+import CreatorContent from './pages/CreatorContent';
+import AIBrain from './pages/AIBrain';
+import AIAssistant from './pages/AIAssistant';
+import AITools from './pages/AITools';
+import AIAgents from './pages/AIAgents';
+import DevTools from './pages/DevTools';
+import Utilities from './pages/Utilities';
+import Converters from './pages/Converters';
+import Generators from './pages/Generators';
+import AdminUsers from './pages/AdminUsers';
+import AdminSettings from './pages/AdminSettings';
+import AdminReports from './pages/AdminReports';
+
 const AITrading = lazy(() => import('./pages/AITrading'));
 const CryptoAIDashboard = lazy(() => import('./pages/CryptoAIDashboard'));
-import { Trading as TradingPage, Portfolio as PortfolioPage, Stocks as StocksPage, Wallet as WalletPage, Mining as MiningPage, SocialFeed as SocialFeedPage, Profiles as ProfilesPage, Messaging as MessagingPage, Communities as CommunitiesPage, Games as GamesPage, Leaderboard as LeaderboardPage, Tournaments as TournamentsPage, Rewards as RewardsPage, Marketplace as MarketplacePage, MarketplaceSell as MarketplaceSellPage, Orders as OrdersPage, Auctions as AuctionsPage, Courses as CoursesPage, Tutorials as TutorialsPage, Certifications as CertificationsPage, Resources as ResourcesPage, CreatorDashboard as CreatorDashboardPage, CreatorAnalytics as CreatorAnalyticsPage, Monetization as MonetizationPage, CreatorContent as CreatorContentPage, AIBrain as AIBrainPage, AIAssistant as AIAssistantPage, AITools as AIToolsPage, AIAgents as AIAgentsPage, DevTools as DevToolsPage, Utilities as UtilitiesPage, Converters as ConvertersPage, Generators as GeneratorsPage, AdminDashboard as AdminDashboardPage, AdminUsers as AdminUsersPage, AdminSettings as AdminSettingsPage, AdminReports as AdminReportsPage } from './pages/FinancePages';
+
 const AITrainingLoops = lazy(() => import('./pages/AITrainingLoops'));
 const APIDocs = lazy(() => import('./pages/APIDocs'));
 const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
@@ -2139,43 +2175,43 @@ export default function App() {
           <Route path="/yieldFarming" component={YieldFarming} />
           <Route path="/zapierIntegration" component={ZapierIntegration} />
           <Route path="/zeroKnowledgeProof" component={ZeroKnowledgeProof} />
-          <Route path="/trading" component={TradingPage} />
-          <Route path="/portfolio" component={PortfolioPage} />
-          <Route path="/stocks" component={StocksPage} />
-          <Route path="/wallet" component={WalletPage} />
-          <Route path="/mining" component={MiningPage} />
-          <Route path="/social-feed" component={SocialFeedPage} />
-          <Route path="/profiles" component={ProfilesPage} />
-          <Route path="/messaging" component={MessagingPage} />
-          <Route path="/communities" component={CommunitiesPage} />
-          <Route path="/games" component={GamesPage} />
-          <Route path="/leaderboard" component={LeaderboardPage} />
-          <Route path="/tournaments" component={TournamentsPage} />
-          <Route path="/rewards" component={RewardsPage} />
-          <Route path="/marketplace" component={MarketplacePage} />
+          <Route path="/trading" component={Trading} />
+          <Route path="/portfolio" component={Portfolio} />
+          <Route path="/stocks" component={Stocks} />
+          <Route path="/wallet" component={Wallet} />
+          <Route path="/mining" component={Mining} />
+          <Route path="/social-feed" component={SocialFeed} />
+          <Route path="/profiles" component={Profiles} />
+          <Route path="/messaging" component={Messaging} />
+          <Route path="/communities" component={Communities} />
+          <Route path="/games" component={Games} />
+          <Route path="/leaderboard" component={Leaderboard} />
+          <Route path="/tournaments" component={Tournaments} />
+          <Route path="/rewards" component={Rewards} />
+          <Route path="/marketplace" component={Marketplace} />
           <Route path="/marketplace-sell" component={MarketplaceSellPage} />
-          <Route path="/orders" component={OrdersPage} />
-          <Route path="/auctions" component={AuctionsPage} />
-          <Route path="/courses" component={CoursesPage} />
-          <Route path="/tutorials" component={TutorialsPage} />
-          <Route path="/certifications" component={CertificationsPage} />
-          <Route path="/resources" component={ResourcesPage} />
-          <Route path="/creator-dashboard" component={CreatorDashboardPage} />
-          <Route path="/creator-analytics" component={CreatorAnalyticsPage} />
-          <Route path="/monetization" component={MonetizationPage} />
-          <Route path="/creator-content" component={CreatorContentPage} />
-          <Route path="/ai-brain" component={AIBrainPage} />
-          <Route path="/ai-assistant" component={AIAssistantPage} />
-          <Route path="/ai-tools" component={AIToolsPage} />
-          <Route path="/ai-agents" component={AIAgentsPage} />
-          <Route path="/dev-tools" component={DevToolsPage} />
-          <Route path="/utilities" component={UtilitiesPage} />
-          <Route path="/converters" component={ConvertersPage} />
-          <Route path="/generators" component={GeneratorsPage} />
+          <Route path="/orders" component={Orders} />
+          <Route path="/auctions" component={Auctions} />
+          <Route path="/courses" component={Courses} />
+          <Route path="/tutorials" component={Tutorials} />
+          <Route path="/certifications" component={Certifications} />
+          <Route path="/resources" component={Resources} />
+          <Route path="/creator-dashboard" component={CreatorDashboard} />
+          <Route path="/creator-analytics" component={CreatorAnalytics} />
+          <Route path="/monetization" component={Monetization} />
+          <Route path="/creator-content" component={CreatorContent} />
+          <Route path="/ai-brain" component={AIBrain} />
+          <Route path="/ai-assistant" component={AIAssistant} />
+          <Route path="/ai-tools" component={AITools} />
+          <Route path="/ai-agents" component={AIAgents} />
+          <Route path="/dev-tools" component={DevTools} />
+          <Route path="/utilities" component={Utilities} />
+          <Route path="/converters" component={Converters} />
+          <Route path="/generators" component={Generators} />
           <Route path="/admin-dashboard" component={AdminDashboardPage} />
-          <Route path="/admin-users" component={AdminUsersPage} />
-          <Route path="/admin-settings" component={AdminSettingsPage} />
-          <Route path="/admin-reports" component={AdminReportsPage} />
+          <Route path="/admin-users" component={AdminUsers} />
+          <Route path="/admin-settings" component={AdminSettings} />
+          <Route path="/admin-reports" component={AdminReports} />
           <Route path="/" component={Home} />
           <Route component={NotFound} />
                 </Switch>

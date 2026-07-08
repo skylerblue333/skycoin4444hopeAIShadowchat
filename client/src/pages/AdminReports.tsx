@@ -4,16 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Suspense } from 'react';
 
-export default function CreatorDashboard() {
+export default function AdminReports() {
   const { user } = useAuth();
 
   return (
     <ProductionPageTemplate
-      title="CreatorDashboard"
+      title="AdminReports"
       subtitle="Production-grade page with enterprise features"
       breadcrumbs={[
         { label: 'Home', href: '/' },
-        { label: 'CreatorDashboard', href: '/creatorDashboard' }
+        { label: 'AdminReports', href: '/adminReports' }
       ]}
       actions={
         <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:opacity-90">
@@ -24,9 +24,9 @@ export default function CreatorDashboard() {
       <Suspense fallback={<SkeletonCard />}>
         <div className="space-y-6">
           <Card className="p-6 border-slate-800 hover:border-blue-500/50 transition-colors">
-            <h2 className="text-2xl font-bold mb-4 text-white">CreatorDashboard</h2>
+            <h2 className="text-2xl font-bold mb-4 text-white">AdminReports</h2>
             <p className="text-slate-400 mb-4">
-              Enterprise-grade CreatorDashboard page with production-ready components,
+              Enterprise-grade AdminReports page with production-ready components,
               real-time data, advanced analytics, and seamless user experience.
             </p>
             <div className="flex gap-2">
