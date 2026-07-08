@@ -310,7 +310,6 @@ ${modeInstructions[mode]}
 Rules:
 - Output ONLY the code/content requested
 - No markdown code fences in the output (raw code only)
-- No placeholder comments like "// TODO" or "// implement this"
 - Production-ready, fully functional implementations
 - Language: ${params.language}
 ${params.targetFile ? `- Target file: ${params.targetFile}` : ""}`;
