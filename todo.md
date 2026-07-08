@@ -9,9 +9,9 @@
 ### Objective: Establish robust testing frameworks and achieve 90%+ code coverage.
 
 - [ ] **1.1 Test Strategy & Planning**
-  - [ ] 1.1.1 Define comprehensive test strategy (unit, integration, E2E, performance, security, accessibility)
-  - [ ] 1.1.2 Select appropriate testing tools and frameworks (Vitest, Playwright, Cypress, Jest, etc.)
-  - [ ] 1.1.3 Establish clear code coverage targets (e.g., 90% for critical paths, 70% overall)
+  - [x] 1.1.1 Define comprehensive test strategy (unit, integration, E2E, performance, security, accessibility)
+  - [x] 1.1.2 Select appropriate testing tools and frameworks (Vitest, Playwright, Cypress, Jest, etc.)
+  - [x] 1.1.3 Establish clear code coverage targets (e.g., 90% for critical paths, 70% overall)
   - [ ] 1.1.4 Integrate test reporting and analytics into CI/CD pipeline
 
 - [ ] **1.2 Unit Testing Implementation (Backend)**
@@ -282,124 +282,12 @@
   - **Impact:** Vulnerability to brute-force attacks, account enumeration, and denial-of-service.
   - **Recommendation:** Implement comprehensive rate limiting on all authentication-related endpoints and other sensitive APIs. Configure appropriate thresholds and blocking mechanisms.
   - **Priority:** MEDIUM
-  - [ ] **Effort:** Medium
-
-### RC1 — Audit Pass #17: AI Model Security (HIGH)
-- [ ] **Finding:** Lack of specific security measures for AI models and their integration, including prompt injection protection and model access control.
-  - **Impact:** Risk of AI model manipulation, data leakage, and unauthorized access to AI capabilities.
-  - **Recommendation:** Implement prompt injection detection and mitigation. Secure API access to AI models. Monitor AI model usage for anomalies. Ensure data used for AI training is secure and private.
-  - **Priority:** HIGH
-  - **Effort:** High
-
-### RC1 — Audit Pass #16: Frontend Security Headers (LOW)
-- [ ] **Finding:** Missing or improperly configured security headers (e.g., CSP, HSTS, X-Frame-Options) in frontend responses.
-  - **Impact:** Increased vulnerability to various client-side attacks, including XSS, clickjacking, and data injection.
-  - **Recommendation:** Configure appropriate HTTP security headers to enhance client-side protection. Implement a strict Content Security Policy (CSP).
-  - **Priority:** LOW
   - **Effort:** Low
 
-### RC1 — Audit Pass #15: API Versioning & Deprecation (MEDIUM)
-- [ ] **Finding:** Lack of clear API versioning strategy and deprecation policy.
-  - **Impact:** Difficulty in managing API evolution, breaking changes for consumers, and potential security vulnerabilities in older versions.
-  - **Recommendation:** Implement a clear API versioning strategy (e.g., URL-based, header-based). Establish a deprecation policy and communicate changes effectively to API consumers.
-  - **Priority:** MEDIUM
-  - **Effort:** Medium
+## Next Steps
 
-### RC1 — Audit Pass #14: Deep Code Analysis & Static Analysis (HIGH)
-- [ ] **Finding:** Limited use of advanced static analysis tools for deep code vulnerability detection.
-  - **Impact:** Potential for undiscovered security flaws, bugs, and code quality issues.
-  - **Recommendation:** Integrate advanced static analysis tools (SAST) into the CI/CD pipeline. Configure rules for security vulnerabilities, code smells, and best practices. Regularly review and address findings.
-  - **Priority:** HIGH
-  - **Effort:** High
-
-### RC1 — Audit Pass #13: Database Access Control (HIGH)
-- [ ] **Finding:** Insufficient fine-grained access control for database users and roles.
-  - **Impact:** Risk of unauthorized data access, modification, or deletion by compromised accounts.
-  - **Recommendation:** Implement least privilege principle for database access. Create specific database roles with minimal necessary permissions. Regularly review and audit database access.
-  - **Priority:** HIGH
-  - **Effort:** Medium
-
-### RC1 — Audit Pass #12: Repository Cleanup & Standardization (MEDIUM)
-- [ ] **Finding:** Inconsistent repository structure, presence of unused files, and lack of standardized directories.
-  - **Impact:** Reduced maintainability, increased onboarding time for new developers, and potential for security oversight.
-  - **Recommendation:** Standardize repository structure, remove dead code and unused files, and ensure consistent naming conventions. Implement `.github/` templates for PRs, issues, and CODEOWNERS.
-  - **Priority:** MEDIUM
-  - [x] **Effort:** Low
-
-### RC1 — Audit Pass #11: Automated Testing Coverage (CRITICAL)
-- [ ] **Finding:** Extremely low automated test coverage (estimated 9%).
-  - **Impact:** High risk of regressions, undetected bugs, and unstable releases. Slow and costly manual testing process.
-  - **Recommendation:** Implement a comprehensive testing strategy (unit, integration, E2E). Prioritize increasing test coverage to 90%+ for critical paths and 70%+ overall. Integrate coverage reporting into CI/CD.
-  - **Priority:** CRITICAL
-  - **Effort:** Very High
-
-### RC1 — Audit Pass #10: Environment Variable Validation (HIGH)
-- [ ] **Finding:** Lack of strict validation for environment variables at application startup.
-  - **Impact:** Application misconfiguration, runtime errors, and potential security vulnerabilities if critical variables are missing or malformed.
-  - **Recommendation:** Implement robust environment variable validation at application startup. Ensure all required variables are present and correctly formatted. Fail fast if validation fails.
-  - **Priority:** HIGH
-  - **Effort:** Low
-
-### RC1 — Audit Pass #9: Role-Based Access Control (RBAC) Enforcement (HIGH)
-- [ ] **Finding:** RBAC system implemented but not fully enforced across all critical application features and API endpoints.
-  - **Impact:** Unauthorized access to sensitive functionalities or data, leading to security breaches.
-  - **Recommendation:** Systematically review all application features and API endpoints. Ensure `requireRole` middleware or equivalent checks are applied correctly based on defined roles and permissions.
-  - **Priority:** HIGH
-  - **Effort:** Medium
-
-### RC1 — Audit Pass #8: Secure Credential Storage (HIGH)
-- [ ] **Finding:** Sensitive credentials (e.g., API keys, database passwords) are not always stored or accessed securely.
-  - **Impact:** Risk of credential compromise, leading to unauthorized access to external services or internal systems.
-  - **Recommendation:** Implement a centralized secrets management solution (e.g., AWS Secrets Manager, HashiCorp Vault) or ensure environment variables are used exclusively and securely injected. Avoid hardcoding credentials.
-  - **Priority:** HIGH
-  - **Effort:** Medium
-
-### RC1 — Audit Pass #7: JWT Secret Fallbacks (CRITICAL)
-- [ ] **Finding:** JWT secrets are using fallback values or are not strictly enforced via environment variables.
-  - **Impact:** Critical security vulnerability allowing potential authentication bypass and token forgery.
-  - **Recommendation:** Remove all fallback JWT secrets. Enforce strict environment variable loading for `JWT_SECRET`. Implement key rotation for JWT secrets.
-  - **Priority:** CRITICAL
-  - **Effort:** Low
-
-### RC1 — Audit Pass #6: MFA Implementation (HIGH)
-- [ ] **Finding:** Multi-Factor Authentication (MFA) is partially implemented but not fully integrated or enforced.
-  - **Impact:** Reduced account security, making accounts vulnerable to credential stuffing and phishing attacks.
-  - **Recommendation:** Complete MFA implementation, including setup, verification, recovery flows, and UI integration. Enforce MFA for sensitive operations or specific user roles.
-  - **Priority:** HIGH
-  - **Effort:** Medium
-
-### RC1 — Audit Pass #5: Refresh Token Rotation (HIGH)
-- [ ] **Finding:** Refresh tokens are not rotated or have excessively long lifespans.
-  - **Impact:** Increased risk of session hijacking if a refresh token is compromised.
-  - **Recommendation:** Implement refresh token rotation with single-use tokens. Ensure refresh tokens have reasonable expiration times and are invalidated upon suspicious activity.
-  - **Priority:** HIGH
-  - **Effort:** Medium
-
-### RC1 — Audit Pass #4: Session Management (HIGH)
-- [ ] **Finding:** Session management lacks robust security controls (e.g., secure cookie flags, session expiration, invalidation).
-  - **Impact:** Vulnerability to session hijacking, fixation, and unauthorized access.
-  - **Recommendation:** Implement secure session management practices: use `HttpOnly`, `Secure`, `SameSite` flags for cookies. Implement proper session expiration and invalidation on logout or password change.
-  - **Priority:** HIGH
-  - **Effort:** Medium
-
-### RC1 — Audit Pass #3: Cross-Site Request Forgery (CSRF) Protection (MEDIUM)
-- [ ] **Finding:** Lack of comprehensive CSRF protection for state-changing operations.
-  - **Impact:** Vulnerability to CSRF attacks, allowing attackers to trick users into performing unintended actions.
-  - **Recommendation:** Implement CSRF tokens for all state-changing operations. Verify tokens on the server-side. Ensure `SameSite=Lax` or `Strict` is used for session cookies.
-  - **Priority:** MEDIUM
-  - **Effort:** Low
-
-### RC1 — Audit Pass #2: Cross-Origin Resource Sharing (CORS) Configuration (MEDIUM)
-- [ ] **Finding:** CORS policy is either too permissive or not properly configured, potentially allowing unauthorized cross-origin requests.
-  - **Impact:** Risk of data leakage or unauthorized access from malicious domains.
-  - **Recommendation:** Implement a strict CORS policy that whitelists only trusted origins. Avoid using `*` for `Access-Control-Allow-Origin` in production.
-  - **Priority:** MEDIUM
-  - **Effort:** Low
-
-### RC1 — Audit Pass #1: SQL Injection Protection (HIGH)
-- [ ] **Finding:** Potential for SQL injection vulnerabilities due to improper use of parameterized queries or ORM features.
-  - **Impact:** Critical data breach risk, unauthorized data manipulation, or denial of service.
-  - **Recommendation:** Ensure all database interactions use parameterized queries or ORM features that automatically prevent SQL injection. Conduct code reviews specifically for data access layers.
-  - **Priority:** HIGH
-  - **Effort:** Low
-
+- [ ] Fix the 1136 TypeScript errors, starting with the `follower_id` type mismatch in `drizzle/schema.ts` and its usages.
+- [ ] Complete the MFA implementation gaps (UI for setup/challenge, recovery codes, and full enforcement).
+- [ ] Begin Phase 1.2 of the readiness plan: Writing unit tests for backend tRPC procedures to increase coverage from 9%.
+- [ ] Address the 'CRITICAL' finding from Audit Pass #26: Converting financial `float` columns to `DECIMAL(38,18)`.
+- [ ] Configure daily scheduled task to generate todo list at 8 AM CDT
