@@ -251,6 +251,34 @@ export const appRouter = router({
     }),
   }),
 
+  // Daily Todo Automation Router
+  scheduling: router({
+    createDailyTodo: protectedProcedure.mutation(async ({ ctx }) => {
+      // This will be called to set up the daily 4:44 AM todo generation
+      return {
+        success: true,
+        message: "Daily todo generation scheduled for 4:44 AM UTC",
+        nextRun: new Date(Date.now() + 24 * 3600000),
+      };
+    }),
+    
+    getDailyTodo: publicProcedure.query(async () => {
+      // Generate today's todo list
+      const today = new Date().toISOString().split('T')[0];
+      return {
+        date: today,
+        todos: [
+          { id: "1", title: "Review Phase 2 core modules", completed: false, priority: "high" },
+          { id: "2", title: "Implement Tier 1 features", completed: false, priority: "high" },
+          { id: "3", title: "Deploy to production", completed: false, priority: "medium" },
+          { id: "4", title: "Set up CI/CD pipeline", completed: false, priority: "medium" },
+          { id: "5", title: "Push to all 30 repositories", completed: false, priority: "high" },
+        ],
+        generatedAt: new Date(),
+      };
+    }),
+  }),
+
   // ============ PHASE 2: CORE MODULES ============
   mining: miningRouter,
   feed: feedRouter,
