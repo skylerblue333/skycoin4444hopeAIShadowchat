@@ -55,14 +55,14 @@
 
 - [ ] **2.1 Authentication & Authorization**
   - [x] 2.1.1 Complete MFA implementation (setup, challenge, recovery, UI integration)
-  - [ ] 2.1.2 Enforce RBAC across all tRPC procedures and UI components
-  - [ ] 2.1.3 Implement session management hardening (rotating refresh tokens, short-lived access tokens)
+  - [x] 2.1.2 Enforce RBAC across all tRPC procedures and UI components
+  - [x] 2.1.3 Implement session management hardening (rotating refresh tokens, short-lived access tokens)
   - [x] 2.1.4 Implement rate limiting for authentication endpoints
 
 - [ ] **2.2 Data Protection**
   - [x] 2.2.1 Implement encryption at rest for sensitive data in the database
   - [ ] 2.2.2 Implement encryption in transit (TLS/SSL enforcement)
-  - [ ] 2.2.3 Securely handle user-uploaded files (S3 bucket policies, access controls)
+  - [x] 2.2.3 Securely handle user-uploaded files (S3 bucket policies, access controls)
   - [ ] 2.2.4 Implement data anonymization/masking for non-production environments
 
 - [ ] **2.3 API Security**
@@ -77,7 +77,7 @@
   - [ ] 2.4.3 Review third-party libraries for known vulnerabilities and licensing issues
 
 - [ ] **2.5 Security Monitoring & Logging**
-  - [ ] 2.5.1 Implement comprehensive security logging for all critical events
+  - [x] 2.5.1 Implement comprehensive security logging for all critical events
   - [ ] 2.5.2 Integrate logs with SIEM or security monitoring solution
   - [ ] 2.5.3 Implement real-time threat detection and alerting
   - [ ] 2.5.4 Conduct regular security audits and penetration testing
@@ -95,8 +95,8 @@
   - [ ] 3.1.4 Optimize critical rendering path and reduce render-blocking resources
 
 - [ ] **3.2 Backend Performance**
-  - [ ] 3.2.1 Optimize database queries and indexing
-  - [ ] 3.2.2 Implement server-side caching (Redis, Memcached)
+  - [x] 3.2.1 Optimize database queries and indexing
+  - [x] 3.2.2 Implement server-side caching (Redis, Memcached)
   - [ ] 3.2.3 Optimize API response times and payload sizes
   - [ ] 3.2.4 Implement efficient background job processing
 
