@@ -276,7 +276,7 @@ router.post('/api/dating/subscription/cancel', async (req: any, res) => {
 });
 
 // Check feature access
-export async function hasFeatureAccess(userId: number, feature: string): Promise<boolean> {
+export async function hasFeatureAccess(userId: string, feature: string): Promise<boolean> {
   const subscription = await db
     .select()
     .from(datingSubscriptions)
@@ -295,7 +295,7 @@ export async function hasFeatureAccess(userId: number, feature: string): Promise
 }
 
 // Check daily limits
-export async function checkDailyLimit(userId: number, limitType: 'likes' | 'superLikes'): Promise<boolean> {
+export async function checkDailyLimit(userId: string, limitType: 'likes' | 'superLikes'): Promise<boolean> {
   const subscription = await db
     .select()
     .from(datingSubscriptions)

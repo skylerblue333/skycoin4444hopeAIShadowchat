@@ -174,6 +174,7 @@ export const aiRouter = router({
     .input(z.object({
       userId: z.string(),
       message: z.string(),
+      systemPrompt: z.string().optional(),
       context: z.object({
         platform: z.string().optional(),
         engine: z.string().optional(),

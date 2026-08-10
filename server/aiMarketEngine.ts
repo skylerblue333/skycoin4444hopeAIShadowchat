@@ -203,6 +203,7 @@ Respond in JSON format:
 
   // Insert signal
   await db.insert(marketSignals).values({
+    id: crypto.randomUUID(),
     agentId: agent.id,
     signalType,
     strength: confidence >= 85 ? "strong" : confidence >= 75 ? "moderate" : "weak",
@@ -212,7 +213,7 @@ Respond in JSON format:
     priceTarget: (parseFloat(stats.tokenPriceUsd) * (1 + (crypto.getRandomValues(new Uint8Array(1))[0] / 256) * 0.3)).toFixed(6),
     confidenceScore: confidence,
     momentumDelta,
-    tags,
+    tags: tags as any,
     isPublic: true,
     postedToFeed: false,
     expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h expiry
@@ -220,10 +221,11 @@ Respond in JSON format:
 
   // Log activity
   await db.insert(aiAgentActivity).values({
+    id: crypto.randomUUID(),
     agentId: agent.id,
     activityType: "signal_generated",
     summary: `${agent.name} generated a ${signalType} signal with ${confidence}% confidence: "${title}"`,
-    metadata: { signalType, confidence, momentumDelta },
+    metadata: { signalType, confidence, momentumDelta } as any,
     impactScore: Math.round(confidence / 10),
   });
 
@@ -233,9 +235,9 @@ Respond in JSON format:
   );
 
   // Update ICO stats — momentum and sentiment drift
-  const newMomentum = Math.min(100, Math.max(20, currentMomentum + parseFloat(momentumDelta)));
+  const newMomentum = Math.min(100, Math.max(20, (currentMomentum || 0) + parseFloat(momentumDelta)));
   const sentimentDelta = ((crypto.getRandomValues(new Uint8Array(1))[0] / 256) * 3 - 0.5).toFixed(4);
-  const newSentiment = Math.min(100, Math.max(20, currentSentiment + parseFloat(sentimentDelta)));
+  const newSentiment = Math.min(100, Math.max(20, (currentSentiment || 0) + parseFloat(sentimentDelta)));
 
   // Recalculate rarity
   const rarity = calculateRarity(newMomentum, newSentiment, currentRaised);
@@ -253,21 +255,30 @@ Respond in JSON format:
 
   // Log stat update
   await db.insert(aiAgentActivity).values({
+    id: crypto.randomUUID(),
     agentId: agent.id,
     activityType: "stat_updated",
     summary: `${agent.name} updated momentum to ${Math.round(newMomentum)}, sentiment to ${Math.round(newSentiment)}, rarity: ${rarity.label}`,
-    metadata: { newMomentum, newSentiment, rarity },
+    metadata: { newMomentum, newSentiment, rarity } as any,
     impactScore: 5,
   });
 
   // Daily rarity snapshot — create if not exists for today
   const today = new Date().toISOString().split("T")[0];
   try {
-    await db.execute(
-      sql`INSERT IGNORE INTO daily_rarity_snapshots 
-        (date, rarity_status, rarity_label, rarity_score, momentum_score, sentiment_score, total_raised_usd, total_investors, token_price_usd, agent_summary)
-        VALUES (${today}, ${rarity.status}, ${rarity.label}, ${rarity.score}, ${Math.round(newMomentum)}, ${Math.round(newSentiment)}, ${stats.totalRaisedUsd}, ${stats.totalInvestors}, ${stats.tokenPriceUsd}, ${`${agent.name}: ${title}`})`
-    );
+    await db.insert(dailyRaritySnapshots).values({
+      id: crypto.randomUUID(),
+      date: today,
+      rarityStatus: rarity.status,
+      rarityLabel: rarity.label,
+      rarityScore: rarity.score,
+      momentumScore: Math.round(newMomentum),
+      sentimentScore: Math.round(newSentiment),
+      totalRaisedUsd: stats.totalRaisedUsd,
+      totalInvestors: stats.totalInvestors,
+      tokenPriceUsd: stats.tokenPriceUsd,
+      agentSummary: `${agent.name}: ${title}`,
+    });
   } catch {
     // Snapshot already exists for today — that's fine
   }

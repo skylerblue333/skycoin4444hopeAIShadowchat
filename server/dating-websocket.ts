@@ -6,7 +6,7 @@ import { eq, and } from 'drizzle-orm';
 
 interface WebSocketClient {
   ws: WebSocket;
-  userId: number;
+  userId: string;
   isAlive: boolean;
 }
 
@@ -15,7 +15,7 @@ const clients = new Map<number, WebSocketClient[]>();
 export function setupWebSocketServer(wss: WebSocketServer) {
   wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
     
-    let userId: number | null = null;
+    let userId: string | null = null;
 
     ws.on('message', async (data: Buffer) => {
       try {
@@ -127,7 +127,7 @@ export function setupWebSocketServer(wss: WebSocketServer) {
 }
 
 export async function broadcastNotification(
-  userId: number,
+  userId: string,
   notification: {
     type: 'match' | 'message' | 'superlike' | 'like' | 'profile_view' | 'message_read';
     content: string;
@@ -159,8 +159,8 @@ export async function broadcastNotification(
   }
 
 export async function broadcastMatch(
-  userId1: number,
-  userId2: number,
+  userId1: string,
+  userId2: string,
   matchType: 'like' | 'superlike' | 'mutual_like' | 'mutual_superlike'
 ) {
   const isMutual = matchType.startsWith('mutual_');
@@ -190,8 +190,8 @@ export async function broadcastMatch(
 }
 
 export async function broadcastMessage(
-  matchId: number,
-  senderId: number,
+  matchId: string,
+  senderId: string,
   recipientId: number,
   content: string
 ) {
@@ -211,8 +211,8 @@ export async function broadcastProfileView(viewerId: number, profileOwnerId: num
 }
 
 export async function broadcastMessageRead(
-  matchId: number,
-  senderId: number,
+  matchId: string,
+  senderId: string,
   readerId: number
 ) {
   await broadcastNotification(senderId, {

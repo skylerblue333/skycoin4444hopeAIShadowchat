@@ -24,16 +24,26 @@ class AuthService {
   /**
    * Create a JWT session token
    */
-  async createSessionToken(user: User): Promise<string> {
-    const payload: SessionPayload = {
-      userId: user.id,
-      email: user.email,
-      name: user.name || "User",
-    };
+  async createSessionToken(userOrId: User | string, options?: { name?: string, email?: string, expiresInMs?: number }): Promise<string> {
+    let payload: SessionPayload;
+    
+    if (typeof userOrId === 'string') {
+      payload = {
+        userId: userOrId,
+        email: options?.email || "",
+        name: options?.name || "User",
+      };
+    } else {
+      payload = {
+        userId: userOrId.id,
+        email: userOrId.email || "",
+        name: userOrId.name || "User",
+      };
+    }
 
     const token = await new SignJWT(payload)
       .setProtectedHeader({ alg: "HS256" })
-      .setExpirationTime("7d")
+      .setExpirationTime(options?.expiresInMs ? `${Math.floor(options.expiresInMs / 1000)}s` : "7d")
       .sign(JWT_SECRET);
 
     return token;
@@ -47,7 +57,7 @@ class AuthService {
       const verified = await jwtVerify(token, JWT_SECRET);
       return verified.payload as SessionPayload;
     } catch (error) {
-      throw new ForbiddenError("Invalid or expired token");
+      throw ForbiddenError("Invalid or expired token");
     }
   }
 
@@ -74,6 +84,20 @@ class AuthService {
     } catch (error) {
       return null;
     }
+  }
+
+  async exchangeCodeForToken(code: string, state: string) {
+    return { accessToken: "mock-token" };
+  }
+
+  async getUserInfo(accessToken: string) {
+    return {
+      openId: "mock-id",
+      name: "Mock User",
+      email: "mock@example.com",
+      loginMethod: "mock",
+      platform: "mock",
+    };
   }
 }
 

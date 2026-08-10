@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { invokeLLM } from "./server/_core/llm";
+import { invokeLLM } from "./_core/llm";
 
 /**
  * AI Autonomous Trading Bot - 24/7 Swap Pool & Market Operations
@@ -182,7 +182,7 @@ class AITradingBot {
   /**
    * Execute manual trade
    */
-  async executeTrade(
+  async executeManualTrade(
     userId: string,
     pair: string,
     type: "buy" | "sell" | "swap",

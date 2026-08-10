@@ -117,7 +117,7 @@ export const blockchainRouter = router({
    * Broadcast a previously signed transaction.
    */
   broadcast: protectedProcedure
-    .input(z.object({ txId: z.number().int().positive() }))
+    .input(z.object({ txId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return blockchainCustody.broadcastTransaction(input.txId, ctx.user.id);
     }),
@@ -176,13 +176,13 @@ export const blockchainRouter = router({
   adminAllTransactions: adminProcedure
     .input(
       z.object({
-        userId: z.number().int().positive().optional(),
+        userId: z.string().optional(),
         limit: z.number().int().min(1).max(500).optional(),
       })
     )
     .query(async ({ input }) => {
       const txs = await blockchainCustody.getTransactionHistory(
-        input.userId ?? 0,
+        input.userId ?? "",
         input.limit ?? 100
       );
       return txs.map(({ signedTxHex: _stripped, ...tx }) => tx);

@@ -43,7 +43,7 @@ export type PlatformEventType =
 
 export interface PlatformEvent<T = Record<string, unknown>> {
   type: PlatformEventType;
-  userId?: number;
+  userId?: string;
   payload: T;
   timestamp: number;
   traceId: string;
@@ -68,7 +68,7 @@ class PlatformEventBus extends EventEmitter {
   publish<T = Record<string, unknown>>(
     type: PlatformEventType,
     payload: T,
-    userId?: number
+    userId?: string
   ): void {
     const event: PlatformEvent<T> = {
       type,
@@ -114,7 +114,7 @@ class PlatformEventBus extends EventEmitter {
       await db.insert(auditLedger).values(
         batch.map((e) => ({
           eventType: e.type,
-          userId: e.userId ?? null,
+          userId: e.userId ? String(e.userId) : null,
           payload: e.payload as Record<string, unknown>,
           traceId: e.traceId,
           occurredAt: new Date(e.timestamp),

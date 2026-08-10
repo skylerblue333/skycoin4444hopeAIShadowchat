@@ -150,7 +150,7 @@ export function FixedNavigation() {
 
       {/* Row 2 */}
       <div className="flex items-center gap-1 px-4 py-3 bg-slate-900/50">
-        {navItems2.map((item) => (
+        {navItems2.map((item: any) => (
           <div key={item.label} className="relative group">
             {item.href ? (
               <Link href={item.href}>

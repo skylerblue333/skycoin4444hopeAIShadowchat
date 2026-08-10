@@ -2,9 +2,10 @@
  * Compliance Layer
  * KYC workflows, GDPR controls, consent management, data deletion
  */
+import crypto from 'crypto';
 import { z } from "zod";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
-import { getDb } from "./db";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc.js";
+import { getDb } from "./db.js";
 import { sql } from "drizzle-orm";
 import { invokeLLM } from "./_core/llm";
 
@@ -101,15 +102,15 @@ async function ensureComplianceTables() {
 
 async function logComplianceAction(
   db: NonNullable<Awaited<ReturnType<typeof getDb>>>,
-  userId: number | null,
+  userId: string | null,
   action: string,
   entityType: string | null,
-  entityId: number | null,
+  entityId: string | null,
   details: Record<string, unknown>,
 ) {
   const detailsJson = JSON.stringify(details).replace(/'/g, "''");
   await db.execute(sql.raw(
-    `INSERT INTO compliance_audit_log (user_id, action, entity_type, entity_id, details) VALUES (${userId ?? "NULL"}, '${action}', ${entityType ? `'${entityType}'` : "NULL"}, ${entityId ?? "NULL"}, '${detailsJson}')`,
+    `INSERT INTO compliance_audit_log (id, user_id, action, entity_type, entity_id, details) VALUES ('${crypto.randomUUID()}', ${userId ? `'${userId}'` : "NULL"}, '${action}', ${entityType ? `'${entityType}'` : "NULL"}, ${entityId ? `'${entityId}'` : "NULL"}, '${detailsJson}')`,
   ));
 }
 
@@ -125,7 +126,7 @@ export const complianceRouter = router({
     if (!db) return { status: "not_started" as KYCStatus, level: "basic", record: null };
 
     const [rows] = await db.execute(sql.raw(
-      `SELECT * FROM kyc_records WHERE user_id=${ctx.user.id} LIMIT 1`,
+      `SELECT * FROM kyc_records WHERE user_id='${ctx.user.id}' LIMIT 1`,
     )) as any[];
     const data: any[] = Array.isArray(rows) ? rows : [];
     const record = data[0] ?? null;
@@ -198,8 +199,8 @@ export const complianceRouter = router({
       const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 
       await db.execute(sql.raw(`
-        INSERT INTO kyc_records (user_id, status, level, first_name, last_name, date_of_birth, country, document_type, document_number, risk_score, submitted_at, expires_at)
-        VALUES (${ctx.user.id}, '${status}', '${input.level}', '${input.firstName.replace(/'/g, "''")}', '${input.lastName.replace(/'/g, "''")}', '${input.dateOfBirth}', '${input.country.replace(/'/g, "''")}', '${input.documentType}', '${input.documentNumber.replace(/'/g, "''")}', ${riskScore}, NOW(), '${expiresAt.toISOString().slice(0, 19)}')
+        INSERT INTO kyc_records (id, user_id, status, level, first_name, last_name, date_of_birth, country, document_type, document_number, risk_score, submitted_at, expires_at)
+        VALUES ('${crypto.randomUUID()}', '${ctx.user.id}', '${status}', '${input.level}', '${input.firstName.replace(/'/g, "''")}', '${input.lastName.replace(/'/g, "''")}', '${input.dateOfBirth}', '${input.country.replace(/'/g, "''")}', '${input.documentType}', '${input.documentNumber.replace(/'/g, "''")}', ${riskScore}, NOW(), '${expiresAt.toISOString().slice(0, 19)}')
         ON DUPLICATE KEY UPDATE status='${status}', level='${input.level}', first_name='${input.firstName.replace(/'/g, "''")}', last_name='${input.lastName.replace(/'/g, "''")}', date_of_birth='${input.dateOfBirth}', country='${input.country.replace(/'/g, "''")}', document_type='${input.documentType}', document_number='${input.documentNumber.replace(/'/g, "''")}', risk_score=${riskScore}, submitted_at=NOW(), expires_at='${expiresAt.toISOString().slice(0, 19)}', updated_at=NOW()
       `));
 
@@ -217,7 +218,7 @@ export const complianceRouter = router({
     if (!db) return { consents: [] };
 
     const [rows] = await db.execute(sql.raw(
-      `SELECT * FROM consent_records WHERE user_id=${ctx.user.id}`,
+      `SELECT * FROM consent_records WHERE user_id='${ctx.user.id}'`,
     )) as any[];
     const data: any[] = Array.isArray(rows) ? rows : [];
 
@@ -256,8 +257,8 @@ export const complianceRouter = router({
       const revokedAt = input.granted ? "NULL" : "NOW()";
 
       await db.execute(sql.raw(`
-        INSERT INTO consent_records (user_id, consent_type, granted, version, granted_at, revoked_at)
-        VALUES (${ctx.user.id}, '${input.consentType}', ${input.granted ? 1 : 0}, '${input.version}', ${grantedAt}, ${revokedAt})
+        INSERT INTO consent_records (id, user_id, consent_type, granted, version, granted_at, revoked_at)
+        VALUES ('${crypto.randomUUID()}', '${ctx.user.id}', '${input.consentType}', ${input.granted ? 1 : 0}, '${input.version}', ${grantedAt}, ${revokedAt})
         ON DUPLICATE KEY UPDATE granted=${input.granted ? 1 : 0}, version='${input.version}', granted_at=${grantedAt}, revoked_at=${revokedAt}
       `));
 
@@ -276,8 +277,8 @@ export const complianceRouter = router({
 
     const scheduledAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h processing time
     await db.execute(sql.raw(`
-      INSERT INTO data_deletion_requests (user_id, request_type, status, scheduled_at)
-      VALUES (${ctx.user.id}, 'data_export', 'pending', '${scheduledAt.toISOString().slice(0, 19)}')
+      INSERT INTO data_deletion_requests (id, user_id, request_type, status, scheduled_at)
+      VALUES ('${crypto.randomUUID()}', '${ctx.user.id}', 'data_export', 'pending', '${scheduledAt.toISOString().slice(0, 19)}')
     `));
 
     await logComplianceAction(db, ctx.user.id, "data_export_requested", "user", ctx.user.id, {});
@@ -302,8 +303,8 @@ export const complianceRouter = router({
       const reason = input.reason ? `'${input.reason.replace(/'/g, "''")}'` : "NULL";
 
       await db.execute(sql.raw(`
-        INSERT INTO data_deletion_requests (user_id, request_type, status, reason, scope, scheduled_at)
-        VALUES (${ctx.user.id}, '${input.type}', 'pending', ${reason}, ${scopeJson !== "NULL" ? `'${scopeJson}'` : "NULL"}, '${scheduledAt.toISOString().slice(0, 19)}')
+        INSERT INTO data_deletion_requests (id, user_id, request_type, status, reason, scope, scheduled_at)
+        VALUES ('${crypto.randomUUID()}', '${ctx.user.id}', '${input.type}', 'pending', ${reason}, ${scopeJson !== "NULL" ? `'${scopeJson}'` : "NULL"}, '${scheduledAt.toISOString().slice(0, 19)}')
       `));
 
       await logComplianceAction(db, ctx.user.id, "deletion_requested", "user", ctx.user.id, { type: input.type, reason: input.reason });
@@ -323,7 +324,7 @@ export const complianceRouter = router({
     if (!db) return { requests: [] };
 
     const [rows] = await db.execute(sql.raw(
-      `SELECT * FROM data_deletion_requests WHERE user_id=${ctx.user.id} ORDER BY created_at DESC LIMIT 20`,
+      `SELECT * FROM data_deletion_requests WHERE user_id='${ctx.user.id}' ORDER BY created_at DESC LIMIT 20`,
     )) as any[];
     const data: any[] = Array.isArray(rows) ? rows : [];
 
@@ -342,14 +343,14 @@ export const complianceRouter = router({
 
   /** Cancel a pending deletion request */
   cancelDeletionRequest: protectedProcedure
-    .input(z.object({ requestId: z.number() }))
+    .input(z.object({ requestId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ensureComplianceTables();
       const db = await getDb();
       if (!db) throw new Error("Database unavailable");
 
       await db.execute(sql.raw(
-        `UPDATE data_deletion_requests SET status='rejected' WHERE id=${input.requestId} AND user_id=${ctx.user.id} AND status='pending'`,
+        `UPDATE data_deletion_requests SET status='rejected' WHERE id='${input.requestId}' AND user_id='${ctx.user.id}' AND status='pending'`,
       ));
 
       await logComplianceAction(db, ctx.user.id, "deletion_cancelled", "request", input.requestId, {});
@@ -365,7 +366,7 @@ export const complianceRouter = router({
       if (!db) return { events: [] };
 
       const [rows] = await db.execute(sql.raw(
-        `SELECT * FROM compliance_audit_log WHERE user_id=${ctx.user.id} ORDER BY created_at DESC LIMIT ${input.limit}`,
+        `SELECT * FROM compliance_audit_log WHERE user_id='${ctx.user.id}' ORDER BY created_at DESC LIMIT ${input.limit}`,
       )) as any[];
       const data: any[] = Array.isArray(rows) ? rows : [];
 
@@ -388,13 +389,13 @@ export const complianceRouter = router({
     if (!db) return { score: 0, issues: [], kycStatus: "not_started" as KYCStatus };
 
     const [kycRows] = await db.execute(sql.raw(
-      `SELECT status, level FROM kyc_records WHERE user_id=${ctx.user.id} LIMIT 1`,
+      `SELECT status, level FROM kyc_records WHERE user_id='${ctx.user.id}' LIMIT 1`,
     )) as any[];
     const kycData: any[] = Array.isArray(kycRows) ? kycRows : [];
     const kyc = kycData[0];
 
     const [consentRows] = await db.execute(sql.raw(
-      `SELECT consent_type, granted FROM consent_records WHERE user_id=${ctx.user.id}`,
+      `SELECT consent_type, granted FROM consent_records WHERE user_id='${ctx.user.id}'`,
     )) as any[];
     const consentData: any[] = Array.isArray(consentRows) ? consentRows : [];
     const consents = new Map(consentData.map((r) => [r.consent_type, !!r.granted]));

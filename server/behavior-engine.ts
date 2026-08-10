@@ -12,6 +12,7 @@
  * over time, creating personalized reality versions of the platform.
  */
 
+import crypto from 'crypto';
 import { eq, gte, desc, count, sql } from "drizzle-orm";
 import { getDb } from "./db.js";
 import { eventBus } from "./event-bus.js";
@@ -30,7 +31,7 @@ export type ArchetypeLabel =
   | "ambassador";
 
 export interface BehaviorProfile {
-  userId: number;
+  userId: string;
   archetype: ArchetypeLabel;
   secondaryArchetype: string | null;
   scores: Record<ArchetypeLabel, number>;
@@ -43,7 +44,7 @@ export interface BehaviorProfile {
 }
 
 export interface AdaptiveRecommendation {
-  userId: number;
+  userId: string;
   archetype: ArchetypeLabel;
   recommendations: Array<{
     action: string;
@@ -75,7 +76,7 @@ export class BehaviorEngine {
    * Triggers archetype recomputation if enough signals accumulate.
    */
   async recordSignal(
-    userId: number,
+    userId: string,
     signalType: string,
     value = 1.0
   ): Promise<void> {
@@ -83,9 +84,11 @@ export class BehaviorEngine {
     if (!db) return;
 
     await db.insert(userBehaviorSignals).values({
+      id: crypto.randomUUID(),
       userId,
       signalType,
       value: String(value),
+      metadata: null,
       recordedAt: new Date(),
     });
 
@@ -105,7 +108,7 @@ export class BehaviorEngine {
   /**
    * Compute and persist user archetype from behavior signals.
    */
-  async computeArchetype(userId: number): Promise<BehaviorProfile> {
+  async computeArchetype(userId: string): Promise<BehaviorProfile> {
     const db = await getDb();
     if (!db) throw new Error("DB unavailable");
 
@@ -121,7 +124,7 @@ export class BehaviorEngine {
       .orderBy(desc(userBehaviorSignals.recordedAt))
       .limit(200);
 
-    const userSignals = signals.filter((s) => s.userId === userId);
+    const userSignals = signals.filter((s) => s.userId === String(userId));
 
     // Compute archetype scores
     const scores: Record<ArchetypeLabel, number> = {
@@ -162,21 +165,24 @@ export class BehaviorEngine {
       .limit(1);
 
     const archetypeData = {
-      userId,
+      userId: String(userId),
       primary,
-      secondary,
-      scores: normalizedScores,
-      confidence: String(confidence),
+      secondary: secondary || "",
+      scores: normalizedScores as any,
+      confidence: confidence.toFixed(2),
       computedAt: new Date(),
     };
 
     if (existing) {
-      await db.update(userArchetypes).set(archetypeData).where(eq(userArchetypes.userId, userId));
+      await db.update(userArchetypes).set(archetypeData).where(eq(userArchetypes.userId, String(userId)));
       if (existing.primary !== primary) {
-        eventBus.publish("USER_ARCHETYPE_CHANGED", { userId, from: existing.primary, to: primary }, userId);
+        eventBus.publish("USER_ARCHETYPE_CHANGED", { userId, from: existing.primary as any, to: primary }, userId);
       }
     } else {
-      await db.insert(userArchetypes).values(archetypeData);
+      await db.insert(userArchetypes).values({
+        id: crypto.randomUUID(),
+        ...archetypeData,
+      });
     }
 
     eventBus.publish("ARCHETYPE_COMPUTED", { userId, archetype: primary, confidence }, userId);
@@ -202,7 +208,7 @@ export class BehaviorEngine {
   /**
    * Get behavior profile for a user (from DB or compute fresh).
    */
-  async getBehaviorProfile(userId: number): Promise<BehaviorProfile | null> {
+  async getBehaviorProfile(userId: string): Promise<BehaviorProfile | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -249,7 +255,7 @@ export class BehaviorEngine {
   /**
    * Generate LLM-backed adaptive recommendations for a user.
    */
-  async getAdaptiveRecommendations(userId: number): Promise<AdaptiveRecommendation> {
+  async getAdaptiveRecommendations(userId: string): Promise<AdaptiveRecommendation> {
     const profile = await this.getBehaviorProfile(userId);
 
     if (!profile) {
@@ -358,7 +364,7 @@ Generate 3 specific, actionable recommendations for this user in JSON format:
     return traits[archetype] ?? [];
   }
 
-  private getDefaultRecommendations(userId: number, profile: BehaviorProfile): AdaptiveRecommendation {
+  private getDefaultRecommendations(userId: string, profile: BehaviorProfile): AdaptiveRecommendation {
     const archetypeRecs: Record<ArchetypeLabel, AdaptiveRecommendation["recommendations"]> = {
       investor: [
         { action: "Stake SKY4444 tokens", reason: "Earn passive yield on your holdings", priority: "high", tokenIncentive: "5% APY in SKY4444" },

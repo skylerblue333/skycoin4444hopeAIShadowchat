@@ -15,9 +15,13 @@ export const aiEnhancedRouter = router({
   chat: publicProcedure
     .input(
       z.object({
-        message: z.string().min(1).max(4000),
+        message: z.string().optional(),
+        messageText: z.string().optional(),
         model: z.string().optional(),
         history: z
+          .array(z.object({ role: z.enum(['user', 'assistant']), content: z.string() }))
+          .optional(),
+        conversationHistory: z
           .array(z.object({ role: z.enum(['user', 'assistant']), content: z.string() }))
           .optional(),
         systemPrompt: z.string().optional(),
@@ -28,6 +32,7 @@ export const aiEnhancedRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         const userId = (input.userId || ctx.user?.id || 'anonymous') as string;
+        const message = input.messageText || input.message || "";
 
         // Build context for intelligent response
         const context = {
@@ -40,18 +45,24 @@ export const aiEnhancedRouter = router({
         };
 
         // Generate intelligent response using OpenAI API
-        const reply = await productionLLM.generateIntelligentResponse(input.message, context);
+        const reply = await productionLLM.generateIntelligentResponse(message, context);
 
         return {
           reply,
+          message: reply,
+          emotionalState: "helpful",
+          tone: "professional",
           model: input.model || 'gpt-4',
           tokensUsed: Math.ceil(reply.length / 4), // Estimate tokens
           engine: input.engine || 'general',
           timestamp: new Date(),
         };
       } catch (error) {
-                return {
+        return {
           reply: 'I encountered an issue processing your request. Please try again.',
+          message: 'I encountered an issue processing your request. Please try again.',
+          emotionalState: "neutral",
+          tone: "neutral",
           model: input.model || 'gpt-4',
           tokensUsed: 0,
           error: true,

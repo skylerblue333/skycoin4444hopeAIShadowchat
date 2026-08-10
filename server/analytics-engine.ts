@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 /**
  * ANALYTICS & OBSERVABILITY ENGINE
  * Production-grade monitoring and analytics:
@@ -14,9 +13,10 @@ import crypto from 'crypto';
  * - Health Scoring (platform health index)
  */
 
+import crypto from 'crypto';
 import { getDb } from "./db";
 import * as schema from "../drizzle";
-import { eq, and, desc, sql, gte, lte, or, count, distinct } from "drizzle-orm";
+import { eq, and, desc, sql, gte, lte, or, count } from "drizzle-orm";
 
 // ═══════════════════════════════════════════════════════════════
 // TYPES
@@ -159,6 +159,7 @@ export class EventTrackingService {
 
     if (userActions > 0) {
       await db.insert(schema.platformMetrics).values({
+        id: crypto.randomUUID(),
         metric: "events_user_actions",
         value: String(userActions),
         category: "engagement",
@@ -167,6 +168,7 @@ export class EventTrackingService {
 
     if (errors > 0) {
       await db.insert(schema.platformMetrics).values({
+        id: crypto.randomUUID(),
         metric: "events_errors",
         value: String(errors),
         category: "performance",
@@ -584,6 +586,7 @@ export class AuditLoggingService {
     // Persist critical audit events
     if (entry.action.includes("delete") || entry.action.includes("ban") || entry.action.includes("payout")) {
       await db.insert(schema.platformMetrics).values({
+        id: crypto.randomUUID(),
         metric: `audit_${entry.action}`,
         value: JSON.stringify({ actorId: entry.actorId, resource: entry.resource, resourceId: entry.resourceId }),
         category: "security",

@@ -243,7 +243,7 @@ interface StatItem {
   value: string | number;
   icon?: React.ReactNode;
   trend?: 'up' | 'down' | 'neutral';
-  color?: 'pink' | 'purple' | 'cyan' | 'green' | 'red';
+  color?: 'pink' | 'purple' | 'cyan' | 'green' | 'red' | 'blue';
 }
 
 export function StatsGrid({ stats }: { stats: StatItem[] }) {
@@ -253,6 +253,7 @@ export function StatsGrid({ stats }: { stats: StatItem[] }) {
     cyan: 'text-cyan-500',
     green: 'text-green-500',
     red: 'text-red-500',
+    blue: 'text-blue-500',
   };
 
   return (

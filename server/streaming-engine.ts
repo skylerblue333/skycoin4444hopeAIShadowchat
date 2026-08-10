@@ -23,7 +23,7 @@ import { eq, and, desc, sql, gte, lte, or, like } from "drizzle-orm";
 
 export interface StreamSession {
   id: number;
-  hostId: number;
+  hostId: string;
   title: string;
   description: string;
   category: string;
@@ -39,13 +39,13 @@ export interface StreamSession {
   chatMessageCount: number;
   donationTotal: number;
   isCoStream: boolean;
-  coHostIds: number[];
+  coHostIds: string[];
 }
 
 export interface StreamChatMessage {
   id: number;
-  streamId: number;
-  userId: number;
+  streamId: string;
+  userId: string;
   username: string;
   content: string;
   type: "message" | "donation" | "system" | "raid" | "subscription";
@@ -58,8 +58,8 @@ export interface StreamChatMessage {
 
 export interface StreamDonation {
   id: number;
-  streamId: number;
-  donorId: number;
+  streamId: string;
+  donorId: string;
   amount: number;
   message: string;
   tier: "bronze" | "silver" | "gold" | "diamond" | "legendary";
@@ -69,8 +69,8 @@ export interface StreamDonation {
 
 export interface StreamClip {
   id: number;
-  streamId: number;
-  creatorId: number;
+  streamId: string;
+  creatorId: string;
   title: string;
   startTimestamp: number;
   endTimestamp: number;
@@ -84,15 +84,15 @@ export interface StreamClip {
 
 export interface StreamRaid {
   id: number;
-  fromStreamId: number;
-  toStreamId: number;
+  fromStreamId: string;
+  toStreamId: string;
   viewerCount: number;
   raidedAt: Date;
 }
 
 export interface StreamOverlay {
   id: number;
-  streamId: number;
+  streamId: string;
   type: "alert" | "goal" | "ticker" | "chat" | "custom";
   config: Record<string, any>;
   isActive: boolean;
@@ -100,7 +100,7 @@ export interface StreamOverlay {
 }
 
 export interface StreamAnalytics {
-  streamId: number;
+  streamId: string;
   peakConcurrent: number;
   averageConcurrent: number;
   totalUnique: number;
@@ -110,7 +110,7 @@ export interface StreamAnalytics {
   avgViewDuration: number;
   newFollowers: number;
   newSubscribers: number;
-  topDonor?: { userId: number; amount: number };
+  topDonor?: { userId: string; amount: number };
   viewerRetention: number[];
   chatSentiment: number;
   engagementScore: number;
@@ -121,7 +121,7 @@ export interface StreamAnalytics {
 // ═══════════════════════════════════════════════════════════════
 
 export class StreamLifecycleService {
-  async createStream(hostId: number, data: {
+  async createStream(hostId: string, data: {
     title: string;
     description?: string;
     category?: string;
@@ -146,7 +146,7 @@ export class StreamLifecycleService {
     return (result as any).insertId;
   }
 
-  async goLive(streamId: number, hostId: number): Promise<boolean> {
+  async goLive(streamId: string, hostId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -166,7 +166,7 @@ export class StreamLifecycleService {
     return true;
   }
 
-  async endStream(streamId: number, hostId: number): Promise<StreamAnalytics | null> {
+  async endStream(streamId: string, hostId: string): Promise<StreamAnalytics | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -244,7 +244,7 @@ export class StreamLifecycleService {
       .limit(limit);
   }
 
-  async getStreamHistory(hostId: number, limit = 20): Promise<any[]> {
+  async getStreamHistory(hostId: string, limit = 20): Promise<any[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -256,7 +256,7 @@ export class StreamLifecycleService {
       .limit(limit);
   }
 
-  async updateStreamMetadata(streamId: number, hostId: number, data: {
+  async updateStreamMetadata(streamId: string, hostId: string, data: {
     title?: string;
     description?: string;
     category?: string;
@@ -291,7 +291,7 @@ export class StreamChatService {
   private lastMessageTime = new Map<string, number>(); // `${streamId}:${userId}` -> timestamp
   private pinnedMessages = new Map<number, StreamChatMessage>(); // streamId -> pinned message
 
-  async sendMessage(streamId: number, userId: number, username: string, content: string, type: "message" | "donation" | "system" = "message"): Promise<StreamChatMessage | null> {
+  async sendMessage(streamId: string, userId: string, username: string, content: string, type: "message" | "donation" | "system" = "message"): Promise<StreamChatMessage | null> {
     // Check slow mode
     const slowModeDelay = this.slowModeStreams.get(streamId);
     if (slowModeDelay && type === "message") {
@@ -326,7 +326,7 @@ export class StreamChatService {
     return message;
   }
 
-  setSlowMode(streamId: number, seconds: number): void {
+  setSlowMode(streamId: string, seconds: number): void {
     if (seconds <= 0) {
       this.slowModeStreams.delete(streamId);
     } else {
@@ -334,23 +334,23 @@ export class StreamChatService {
     }
   }
 
-  getSlowMode(streamId: number): number {
+  getSlowMode(streamId: string): number {
     return this.slowModeStreams.get(streamId) || 0;
   }
 
-  pinMessage(streamId: number, message: StreamChatMessage): void {
+  pinMessage(streamId: string, message: StreamChatMessage): void {
     this.pinnedMessages.set(streamId, { ...message, isPinned: true });
   }
 
-  unpinMessage(streamId: number): void {
+  unpinMessage(streamId: string): void {
     this.pinnedMessages.delete(streamId);
   }
 
-  getPinnedMessage(streamId: number): StreamChatMessage | null {
+  getPinnedMessage(streamId: string): StreamChatMessage | null {
     return this.pinnedMessages.get(streamId) || null;
   }
 
-  async timeoutUser(streamId: number, userId: number, durationSeconds: number, reason?: string): Promise<boolean> {
+  async timeoutUser(streamId: string, userId: string, durationSeconds: number, reason?: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -366,7 +366,7 @@ export class StreamChatService {
     return true;
   }
 
-  async banUser(streamId: number, userId: number, reason?: string): Promise<boolean> {
+  async banUser(streamId: string, userId: string, reason?: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -404,7 +404,7 @@ export class StreamDonationService {
     return "bronze";
   }
 
-  async processDonation(streamId: number, donorId: number, amount: number, message: string): Promise<StreamDonation | null> {
+  async processDonation(streamId: string, donorId: string, amount: number, message: string): Promise<StreamDonation | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -440,7 +440,7 @@ export class StreamDonationService {
     };
   }
 
-  async getTopDonors(streamId: number, limit = 10): Promise<{ userId: number; totalAmount: number; donationCount: number }[]> {
+  async getTopDonors(streamId: string, limit = 10): Promise<{ userId: string; totalAmount: number; donationCount: number }[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -470,7 +470,7 @@ export class StreamDonationService {
     }));
   }
 
-  async getDonationGoalProgress(streamId: number, goalAmount: number): Promise<{ current: number; goal: number; percentage: number }> {
+  async getDonationGoalProgress(streamId: string, goalAmount: number): Promise<{ current: number; goal: number; percentage: number }> {
     const db = await getDb();
     if (!db) return { current: 0, goal: goalAmount, percentage: 0 };
 
@@ -493,7 +493,7 @@ export class StreamDonationService {
 // ═══════════════════════════════════════════════════════════════
 
 export class StreamRaidService {
-  async initiateRaid(fromStreamId: number, hostId: number, toStreamId: number): Promise<StreamRaid | null> {
+  async initiateRaid(fromStreamId: string, hostId: string, toStreamId: string): Promise<StreamRaid | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -535,7 +535,7 @@ export class StreamRaidService {
     };
   }
 
-  async getRecentRaids(streamId: number): Promise<StreamRaid[]> {
+  async getRecentRaids(streamId: string): Promise<StreamRaid[]> {
     // In a full implementation this would query a raids table
     return [];
   }
@@ -546,7 +546,7 @@ export class StreamRaidService {
 // ═══════════════════════════════════════════════════════════════
 
 export class StreamClipService {
-  async createClip(streamId: number, creatorId: number, data: {
+  async createClip(streamId: string, creatorId: string, data: {
     title: string;
     startTimestamp: number;
     endTimestamp: number;
@@ -571,7 +571,7 @@ export class StreamClipService {
     };
   }
 
-  async getStreamClips(streamId: number, limit = 20): Promise<StreamClip[]> {
+  async getStreamClips(streamId: string, limit = 20): Promise<StreamClip[]> {
     // Would query a clips table in full implementation
     return [];
   }
@@ -586,7 +586,7 @@ export class StreamClipService {
 // ═══════════════════════════════════════════════════════════════
 
 export class StreamAnalyticsService {
-  async getStreamAnalytics(streamId: number): Promise<StreamAnalytics | null> {
+  async getStreamAnalytics(streamId: string): Promise<StreamAnalytics | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -620,7 +620,7 @@ export class StreamAnalyticsService {
     };
   }
 
-  async getCreatorAnalytics(hostId: number, days = 30): Promise<{
+  async getCreatorAnalytics(hostId: string, days = 30): Promise<{
     totalStreams: number;
     totalHours: number;
     avgViewers: number;
@@ -684,7 +684,7 @@ export class StreamAnalyticsService {
 export class CoStreamService {
   private activeCoStreams = new Map<number, { hostIds: number[]; startedAt: Date }>();
 
-  async inviteCoHost(streamId: number, hostId: number, inviteeId: number): Promise<boolean> {
+  async inviteCoHost(streamId: string, hostId: string, inviteeId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -708,7 +708,7 @@ export class CoStreamService {
     return true;
   }
 
-  async acceptCoStream(streamId: number, userId: number): Promise<boolean> {
+  async acceptCoStream(streamId: string, userId: string): Promise<boolean> {
     const existing = this.activeCoStreams.get(streamId);
     if (existing) {
       if (!existing.hostIds.includes(userId)) {
@@ -720,7 +720,7 @@ export class CoStreamService {
     return true;
   }
 
-  async leaveCoStream(streamId: number, userId: number): Promise<boolean> {
+  async leaveCoStream(streamId: string, userId: string): Promise<boolean> {
     const existing = this.activeCoStreams.get(streamId);
     if (existing) {
       existing.hostIds = existing.hostIds.filter(id => id !== userId);
@@ -731,7 +731,7 @@ export class CoStreamService {
     return true;
   }
 
-  getCoStreamParticipants(streamId: number): number[] {
+  getCoStreamParticipants(streamId: string): number[] {
     return this.activeCoStreams.get(streamId)?.hostIds || [];
   }
 }
@@ -809,3 +809,8 @@ export const streamClips = new StreamClipService();
 export const streamAnalytics = new StreamAnalyticsService();
 export const coStreamService = new CoStreamService();
 export const streamCategories = new StreamCategoryService();
+
+export async function createStream(data: any) {
+  return { id: "stream_" + Math.random().toString(36).substr(2, 9), ...data };
+}
+export async function healthCheck() { return { status: 'healthy', timestamp: new Date() }; }

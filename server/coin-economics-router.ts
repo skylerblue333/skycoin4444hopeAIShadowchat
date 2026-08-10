@@ -157,7 +157,7 @@ export const coinEconomicsRouter = router({
     .input(z.object({
       eventType: z.string(),
       grossAmount: z.number(),
-      creatorId: z.number().optional(),
+      creatorId: z.string().optional(),
       referenceId: z.string().optional(),
       token: z.string().default("SKY444"),
     }))
@@ -188,7 +188,7 @@ export const coinEconomicsRouter = router({
       if (creatorShare > 0 && input.creatorId) {
         try {
           const { upsertTokenBalance, createTransaction } = await import("./db");
-          await upsertTokenBalance(input.creatorId, input.token, creatorShare);
+          await upsertTokenBalance(input.creatorId, input.token, String(creatorShare));
           await createTransaction({ userId: input.creatorId, token: input.token, amount: creatorShare, type: "credit", description: `Creator revenue: ${feeConfig.label}` });
         } catch { /* ignore */ }
       }
@@ -258,8 +258,8 @@ export const coinEconomicsRouter = router({
           if (share < 0.001) continue;
           try {
             const { upsertTokenBalance, createTransaction } = await import("./db");
-            await upsertTokenBalance(staker.user_id, "SKY444", share);
-            await createTransaction({ userId: staker.user_id, token: "SKY444", amount: share, type: "credit", description: `Staking profit distribution epoch ${input.epoch}` });
+            await upsertTokenBalance(String(staker.user_id), "SKY444", String(share));
+            await createTransaction({ userId: String(staker.user_id), token: "SKY444", amount: share, type: "credit", description: `Staking profit distribution epoch ${input.epoch}` });
             distributed += share;
           } catch { /* ignore individual failures */ }
         }

@@ -3,7 +3,10 @@ import mysql from 'mysql2/promise';
 import * as schema from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
-const poolConnection = mysql.createPool(process.env.DATABASE_URL as string);
+import { drizzle } from 'drizzle-orm/mysql2';
+
+const connectionString = process.env.DATABASE_URL || "mysql://root:password@localhost:3306/hopeai";
+const poolConnection = mysql.createPool(connectionString);
 
 export const db = drizzle(poolConnection, { schema, mode: 'default' });
 
@@ -14,12 +17,33 @@ export async function getDb() {
 // For now, returning mock data to get the app running
 
 // ============ USER HELPERS ============
-export async function getUserById(id: string) {
-  return { id, name: "User", email: "user@example.com", balance: 0 };
+export async function getUserById(id: string): Promise<schema.User | null> {
+  const user = await db.query.users.findFirst({ where: eq(schema.users.id, id) });
+  if (user) return user;
+  
+  // Return a mock user that matches the type if not found, for development
+  return {
+    id,
+    name: "User",
+    email: "user@example.com",
+    username: "user",
+    bio: "",
+    avatar: "",
+    balance: "0",
+    role: "user",
+    mfaSecret: "",
+    mfaEnabled: false,
+    verified: false,
+    isCron: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 }
 
-export async function getUserByEmail(email: string) {
-  return { id: "1", name: "User", email, balance: 0 };
+export async function getUserByEmail(email: string): Promise<schema.User | null> {
+  const user = await db.query.users.findFirst({ where: eq(schema.users.email, email) });
+  if (user) return user;
+  return null;
 }
 
 export async function upsertUser(data: any) {
@@ -59,6 +83,27 @@ export async function createUser(data: any) {
 
 export async function updateUserBalance(userId: string, amount: number) {
   return { success: true };
+}
+
+export async function upsertTokenBalance(userId: string, tokenSymbol: string, amount: string) {
+  return { success: true };
+}
+
+export async function placeTrade(userId: string, pair: string, side: string, type: string, amount: number, price: number) {
+  return { id: "1", userId, pair, side, type, amount, price };
+}
+
+export async function updateWalletBalance(userId: string, currency: string, amount: number, action: string) {
+  return { success: true };
+}
+
+export async function getWallet(userId: string) {
+  return { userId, balance: 0, balances: { "USD": 1000, "SKY444": 100 }, address: "0x..." };
+}
+
+export async function updateUser(userId: string, data: any): Promise<schema.User | null> {
+  await db.update(schema.users).set(data).where(eq(schema.users.id, userId));
+  return db.query.users.findFirst({ where: eq(schema.users.id, userId) }) as any;
 }
 
 // ============ POST HELPERS ============
@@ -110,9 +155,6 @@ export async function createTransaction(data: any) {
 }
 
 // ============ WALLET HELPERS ============
-export async function getWallet(userId: string) {
-  return { userId, balance: 0, address: "" };
-}
 
 export async function updateWallet(userId: string, balance: number) {
   return { success: true };
@@ -162,8 +204,8 @@ export async function getNotifications(userId: string) {
   return [];
 }
 
-export async function createNotification(userId: string, type: string, content: string) {
-  return { id: "1", userId, type, content };
+export async function createNotification(data: any) {
+  return { id: "1", ...data };
 }
 
 export async function markNotificationAsRead(notificationId: string) {
@@ -211,5 +253,17 @@ export async function searchProducts(query: string) {
 }
 
 export async function searchPosts(query: string) {
+  return [];
+}
+
+export async function logAiAnalytics(data: any) {
+  return { success: true, ...data };
+}
+
+export async function getUnreadNotificationCount(userId: string) {
+  return 0;
+}
+
+export async function getUserFeed(userId: string, limit = 5, offset = 0) {
   return [];
 }

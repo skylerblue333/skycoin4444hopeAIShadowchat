@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { invokeLLM, listLLMModels } from './server/_core/llm';
+import { invokeLLM, listLLMModels } from './_core/llm';
 
 interface AITask {
   type: 'workflow' | 'llm_build' | 'chat' | 'gemini' | 'multi_agent' | 'reasoning' | 'local' | 'chain' | 'offline' | 'complex';
@@ -92,7 +92,8 @@ class AdvancedAIBrain {
       ],
       reasoning: { effort: 'high' }
     });
-    return { result: response.choices[0].message.content, model: 'gpt-5' };
+    const content = response.choices[0].message.content;
+    return { result: typeof content === 'string' ? content : JSON.stringify(content), model: 'gpt-5' };
   }
 
   private async multiAgentOrchestration(task: AITask): Promise<{ result: string; model: string }> {
@@ -114,7 +115,10 @@ class AdvancedAIBrain {
       )
     );
 
-    const combined = results.map(r => r.choices[0].message.content).join('\n\n---\n\n');
+    const combined = results.map(r => {
+      const content = r.choices[0].message.content;
+      return typeof content === 'string' ? content : JSON.stringify(content);
+    }).join('\n\n---\n\n');
     return { result: combined, model: 'multi-agent' };
   }
 
@@ -127,7 +131,8 @@ class AdvancedAIBrain {
       ],
       thinking: { type: 'enabled', budget_tokens: 5000 }
     });
-    return { result: response.choices[0].message.content, model: 'claude-opus' };
+    const content = response.choices[0].message.content;
+    return { result: typeof content === 'string' ? content : JSON.stringify(content), model: 'claude-opus' };
   }
 
   private async claudeAnalysis(prompt: string): Promise<{ result: string; model: string }> {
@@ -138,7 +143,8 @@ class AdvancedAIBrain {
         { role: 'user', content: prompt }
       ]
     });
-    return { result: response.choices[0].message.content, model: 'claude-3-5-sonnet' };
+    const content = response.choices[0].message.content;
+    return { result: typeof content === 'string' ? content : JSON.stringify(content), model: 'claude-3-5-sonnet' };
   }
 
   private async fastResponse(prompt: string): Promise<{ result: string; model: string }> {
@@ -146,7 +152,8 @@ class AdvancedAIBrain {
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }]
     });
-    return { result: response.choices[0].message.content, model: 'gpt-4o-mini' };
+    const content = response.choices[0].message.content;
+    return { result: typeof content === 'string' ? content : JSON.stringify(content), model: 'gpt-4o-mini' };
   }
 
   async threatDetection(data: string): Promise<{ threats: string[]; severity: number }> {
@@ -158,7 +165,8 @@ class AdvancedAIBrain {
       ]
     });
     
-    const content = response.choices[0].message.content;
+    const contentRaw = response.choices[0].message.content;
+    const content = typeof contentRaw === 'string' ? contentRaw : JSON.stringify(contentRaw);
     return {
       threats: content.split('\n').filter(line => line.trim()),
       severity: (crypto.getRandomValues(new Uint8Array(1))[0] / 256) * 10
@@ -173,7 +181,8 @@ class AdvancedAIBrain {
         { role: 'user', content: `Generate code for: ${spec}` }
       ]
     });
-    return response.choices[0].message.content;
+    const content = response.choices[0].message.content;
+    return typeof content === 'string' ? content : JSON.stringify(content);
   }
 
   clearCache() {

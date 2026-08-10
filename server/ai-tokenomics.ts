@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { db } from './db';
 import { users, tokenTransactions } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
@@ -78,11 +79,11 @@ export async function getUserTokenBalance(userId: string): Promise<TokenBalance>
 
     const totalEarned = transactions
       .filter((t) => t.type === 'earn')
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
     const totalSpent = transactions
       .filter((t) => t.type === 'spend')
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
     return {
       userId,
@@ -128,9 +129,11 @@ export async function deductTokens(
 
     // Record transaction
     await db.insert(tokenTransactions).values({
+      id: crypto.randomUUID(),
       userId,
+      tokenSymbol: 'SKY444',
       type: 'spend',
-      amount: cost,
+      amount: cost.toString(),
       interactionType,
       description: description || `${interactionType} x${quantity}`,
       timestamp: new Date(),
@@ -163,9 +166,11 @@ export async function awardTokens(
 }> {
   try {
     await db.insert(tokenTransactions).values({
+      id: crypto.randomUUID(),
       userId,
+      tokenSymbol: 'SKY444',
       type: 'earn',
-      amount,
+      amount: amount.toString(),
       interactionType: 'reward',
       description: reason,
       timestamp: new Date(),

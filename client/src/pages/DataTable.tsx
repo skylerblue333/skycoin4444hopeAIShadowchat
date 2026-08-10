@@ -1,4 +1,4 @@
-import { ProductionPageTemplate, StatsGrid, DataTable, SkeletonCard } from '@/components/ProductionPageTemplate';
+import { ProductionPageTemplate, StatsGrid, SkeletonCard } from '@/components/ProductionPageTemplate';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';

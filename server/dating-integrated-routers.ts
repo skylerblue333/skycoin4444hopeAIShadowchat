@@ -1,4 +1,4 @@
-import { router, protectedProcedure } from './server/_core/trpc';
+import { router, protectedProcedure } from './_core/trpc';
 import { z } from 'zod';
 import * as datingIntegration from './dating-integration-hub';
 import * as datingPhotos from './dating-photos';
@@ -22,8 +22,7 @@ export const datingIntegratedRouter = router({
 
         const result = await datingIntegration.processDatingSubscriptionPayment(
           ctx.user.id,
-          input.tier,
-          tierPrices[input.tier]
+          input.tier
         );
 
         if (result.success) {
@@ -48,7 +47,7 @@ export const datingIntegratedRouter = router({
   // ═══════════════════════════════════════════════════════════════
 
   getMatchInsights: protectedProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.string() }))
     .query(async ({ input, ctx }) => {
       try {
         const insights = await datingIntegration.generateAIMatchingInsights(
@@ -66,7 +65,7 @@ export const datingIntegratedRouter = router({
     }),
 
   getConversationStarters: protectedProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.string() }))
     .query(async ({ input, ctx }) => {
       try {
         const starters = await datingIntegration.generateConversationStarters(
@@ -88,7 +87,7 @@ export const datingIntegratedRouter = router({
   // ═══════════════════════════════════════════════════════════════
 
   notifyMatch: protectedProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         await datingIntegration.notifyDatingEvent(
@@ -111,7 +110,7 @@ export const datingIntegratedRouter = router({
   // ═══════════════════════════════════════════════════════════════
 
   shareProfile: protectedProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         const post = await datingIntegration.shareDatingProfile(
@@ -157,7 +156,7 @@ export const datingIntegratedRouter = router({
   // ═══════════════════════════════════════════════════════════════
 
   startVideoDate: protectedProcedure
-    .input(z.object({ matchId: z.number(), title: z.string() }))
+    .input(z.object({ matchId: z.string(), title: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         const stream = await datingIntegration.initiateDatingVideoStream(
@@ -183,7 +182,7 @@ export const datingIntegratedRouter = router({
     }),
 
   initiateVideoCall: protectedProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         const session = await datingVideochat.initiateVideoCall(
@@ -234,7 +233,7 @@ export const datingIntegratedRouter = router({
   }),
 
   reportSuspiciousActivity: protectedProcedure
-    .input(z.object({ reportedUserId: z.number(), reason: z.string() }))
+    .input(z.object({ reportedUserId: z.string(), reason: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         const report = await datingIntegration.flagSuspiciousActivity(
@@ -257,7 +256,7 @@ export const datingIntegratedRouter = router({
   // ═══════════════════════════════════════════════════════════════
 
   orchestrateMatch: protectedProcedure
-    .input(z.object({ userId2: z.number() }))
+    .input(z.object({ userId2: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         const orchestration = await datingIntegration.orchestrateDatingMatch(
@@ -275,7 +274,7 @@ export const datingIntegratedRouter = router({
     }),
 
   orchestrateMessage: protectedProcedure
-    .input(z.object({ recipientId: z.number(), content: z.string() }))
+    .input(z.object({ recipientId: z.string(), content: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
         const orchestration = await datingIntegration.orchestrateDatingMessage(
@@ -299,7 +298,7 @@ export const datingIntegratedRouter = router({
 
   checkIntegrationHealth: protectedProcedure.query(async () => {
     try {
-      const health = await datingIntegration.checkDatingIntegrationHealth();
+        const health = await datingIntegration.getDatingIntegrationHealth();
       return health;
     } catch (error) {
             throw new TRPCError({

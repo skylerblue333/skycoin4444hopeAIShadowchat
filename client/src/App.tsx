@@ -12,10 +12,13 @@ import { EnhancedNavbar } from "@/components/EnhancedNavbar";
 import { Footer } from "@/components/Footer";
 
 // Lazy load all pages
+
+// Lazy load all pages (Deduplicated)
 const ABTesting = lazy(() => import('./pages/ABTesting'));
 const ABTestingAdvanced = lazy(() => import('./pages/ABTestingAdvanced'));
 const AIAgentEconomy = lazy(() => import('./pages/AIAgentEconomy'));
 const AIAgentMarket = lazy(() => import('./pages/AIAgentMarket'));
+const AIAgents = lazy(() => import('./pages/AIAgents'));
 const AIAssistant = lazy(() => import('./pages/AIAssistant'));
 const AIBrain = lazy(() => import('./pages/AIBrain'));
 const AICodeStudio = lazy(() => import('./pages/AICodeStudio'));
@@ -28,49 +31,9 @@ const AIMatchmaker = lazy(() => import('./pages/AIMatchmaker'));
 const AIModerationQueue = lazy(() => import('./pages/AIModerationQueue'));
 const AIPersonaFeed = lazy(() => import('./pages/AIPersonaFeed'));
 const AIPersonaSystem = lazy(() => import('./pages/AIPersonaSystem'));
+const AITools = lazy(() => import('./pages/AITools'));
 const AIToolsHub = lazy(() => import('./pages/AIToolsHub'));
-import Trading from './pages/Trading';
-import Portfolio from './pages/Portfolio';
-import Stocks from './pages/Stocks';
-import Wallet from './pages/Wallet';
-import Mining from './pages/Mining';
-import SocialFeed from './pages/SocialFeed';
-import Profiles from './pages/Profiles';
-import Messaging from './pages/Messaging';
-import Communities from './pages/Communities';
-import Games from './pages/Games';
-import Leaderboard from './pages/Leaderboard';
-import Tournaments from './pages/Tournaments';
-import Rewards from './pages/Rewards';
-import Marketplace from './pages/Marketplace';
-import Orders from './pages/Orders';
-import Auctions from './pages/Auctions';
-import Courses from './pages/Courses';
-import Tutorials from './pages/Tutorials';
-import Certifications from './pages/Certifications';
-import Resources from './pages/Resources';
-import CreatorDashboard from './pages/CreatorDashboard';
-import CreatorAnalytics from './pages/CreatorAnalytics';
-import Monetization from './pages/Monetization';
-import CreatorContent from './pages/CreatorContent';
-import AIBrain from './pages/AIBrain';
-import AIAssistant from './pages/AIAssistant';
-import AITools from './pages/AITools';
-import AIAgents from './pages/AIAgents';
-import DevTools from './pages/DevTools';
-import Utilities from './pages/Utilities';
-import Converters from './pages/Converters';
-import Generators from './pages/Generators';
-import AdminUsers from './pages/AdminUsers';
-import AdminSettings from './pages/AdminSettings';
-import AdminReports from './pages/AdminReports';
-import { MFASetup } from './pages/MFASetup';
-import { MFAChallengePage } from './pages/MFAChallenge';
-import { MFASettings } from './pages/MFASettings';
-
 const AITrading = lazy(() => import('./pages/AITrading'));
-const CryptoAIDashboard = lazy(() => import('./pages/CryptoAIDashboard'));
-
 const AITrainingLoops = lazy(() => import('./pages/AITrainingLoops'));
 const APIDocs = lazy(() => import('./pages/APIDocs'));
 const APIDocumentation = lazy(() => import('./pages/APIDocumentation'));
@@ -105,6 +68,9 @@ const Admin = lazy(() => import('./pages/Admin'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminOrders = lazy(() => import('./pages/AdminOrders'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const AdminReports = lazy(() => import('./pages/AdminReports'));
+const AdminSettings = lazy(() => import('./pages/AdminSettings'));
+const AdminUsers = lazy(() => import('./pages/AdminUsers'));
 const AdminWalletManager = lazy(() => import('./pages/AdminWalletManager'));
 const AdvancedAdminPanel = lazy(() => import('./pages/AdvancedAdminPanel'));
 const AdvancedAnalytics = lazy(() => import('./pages/AdvancedAnalytics'));
@@ -143,6 +109,7 @@ const AssetManagement = lazy(() => import('./pages/AssetManagement'));
 const AssetTracking = lazy(() => import('./pages/AssetTracking'));
 const AssignmentTracker = lazy(() => import('./pages/AssignmentTracker'));
 const AttributionModeling = lazy(() => import('./pages/AttributionModeling'));
+const Auctions = lazy(() => import('./pages/Auctions'));
 const AudienceSegmentation = lazy(() => import('./pages/AudienceSegmentation'));
 const AudioAnalytics = lazy(() => import('./pages/AudioAnalytics'));
 const AudioEditing = lazy(() => import('./pages/AudioEditing'));
@@ -201,6 +168,7 @@ const CardGridView = lazy(() => import('./pages/CardGridView'));
 const CashFlowAnalysis = lazy(() => import('./pages/CashFlowAnalysis'));
 const CategoryManagement = lazy(() => import('./pages/CategoryManagement'));
 const CertificateManager = lazy(() => import('./pages/CertificateManager'));
+const Certifications = lazy(() => import('./pages/Certifications'));
 const ChainExplorer = lazy(() => import('./pages/ChainExplorer'));
 const ChangeLog = lazy(() => import('./pages/ChangeLog'));
 const ChannelCustomization = lazy(() => import('./pages/ChannelCustomization'));
@@ -235,6 +203,7 @@ const CommentThread = lazy(() => import('./pages/CommentThread'));
 const Comments = lazy(() => import('./pages/Comments'));
 const CommentsSection = lazy(() => import('./pages/CommentsSection'));
 const CommissionManagement = lazy(() => import('./pages/CommissionManagement'));
+const Communities = lazy(() => import('./pages/Communities'));
 const Community = lazy(() => import('./pages/Community'));
 const CommunityCreate = lazy(() => import('./pages/CommunityCreate'));
 const CommunityEngagement = lazy(() => import('./pages/CommunityEngagement'));
@@ -274,18 +243,21 @@ const ConversationArchive = lazy(() => import('./pages/ConversationArchive'));
 const ConversationHistory = lazy(() => import('./pages/ConversationHistory'));
 const ConversionFunnel = lazy(() => import('./pages/ConversionFunnel'));
 const ConversionOptimization = lazy(() => import('./pages/ConversionOptimization'));
+const Converters = lazy(() => import('./pages/Converters'));
 const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
 const CopyrightManagement = lazy(() => import('./pages/CopyrightManagement'));
 const CostAllocation = lazy(() => import('./pages/CostAllocation'));
 const CostBasisCalculation = lazy(() => import('./pages/CostBasisCalculation'));
 const CourseBuilder = lazy(() => import('./pages/CourseBuilder'));
 const CourseCatalog = lazy(() => import('./pages/CourseCatalog'));
+const Courses = lazy(() => import('./pages/Courses'));
 const CoverPhoto = lazy(() => import('./pages/CoverPhoto'));
 const CreateArticle = lazy(() => import('./pages/CreateArticle'));
 const CreateAudio = lazy(() => import('./pages/CreateAudio'));
 const CreateDrop = lazy(() => import('./pages/CreateDrop'));
 const CreateReel = lazy(() => import('./pages/CreateReel'));
 const CreatorAnalytics = lazy(() => import('./pages/CreatorAnalytics'));
+const CreatorContent = lazy(() => import('./pages/CreatorContent'));
 const CreatorDashboard = lazy(() => import('./pages/CreatorDashboard'));
 const CreatorEconomy = lazy(() => import('./pages/CreatorEconomy'));
 const CreatorFunding = lazy(() => import('./pages/CreatorFunding'));
@@ -300,6 +272,7 @@ const CreatorStudio = lazy(() => import('./pages/CreatorStudio'));
 const CrossChainInterop = lazy(() => import('./pages/CrossChainInterop'));
 const CrossChainSwap = lazy(() => import('./pages/CrossChainSwap'));
 const Crypto = lazy(() => import('./pages/Crypto'));
+const CryptoAIDashboard = lazy(() => import('./pages/CryptoAIDashboard'));
 const CryptoEnhancementsPage = lazy(() => import('./pages/CryptoEnhancementsPage'));
 const CryptoExchange = lazy(() => import('./pages/CryptoExchange'));
 const CryptoHub = lazy(() => import('./pages/CryptoHub'));
@@ -350,6 +323,7 @@ const DerivativesTrading = lazy(() => import('./pages/DerivativesTrading'));
 const DestinationGuide = lazy(() => import('./pages/DestinationGuide'));
 const DestinyEngine = lazy(() => import('./pages/DestinyEngine'));
 const DevOps = lazy(() => import('./pages/DevOps'));
+const DevTools = lazy(() => import('./pages/DevTools'));
 const DeveloperArea = lazy(() => import('./pages/DeveloperArea'));
 const DeveloperCommunity = lazy(() => import('./pages/DeveloperCommunity'));
 const DeveloperMarketplace = lazy(() => import('./pages/DeveloperMarketplace'));
@@ -476,6 +450,7 @@ const GameRoom = lazy(() => import('./pages/GameRoom'));
 const GameSettings = lazy(() => import('./pages/GameSettings'));
 const GameSlots = lazy(() => import('./pages/GameSlots'));
 const GameTokenTap = lazy(() => import('./pages/GameTokenTap'));
+const Games = lazy(() => import('./pages/Games'));
 const Gaming = lazy(() => import('./pages/Gaming'));
 const GamingForCharity = lazy(() => import('./pages/GamingForCharity'));
 const GanttChart = lazy(() => import('./pages/GanttChart'));
@@ -485,6 +460,7 @@ const GasTracker = lazy(() => import('./pages/GasTracker'));
 const GeneralSettings = lazy(() => import('./pages/GeneralSettings'));
 const GeneratedApiExplorer = lazy(() => import('./pages/GeneratedApiExplorer'));
 const GeneratedGallery = lazy(() => import('./pages/GeneratedGallery'));
+const Generators = lazy(() => import('./pages/Generators'));
 const GettingStartedGuide = lazy(() => import('./pages/GettingStartedGuide'));
 const GhostMode = lazy(() => import('./pages/GhostMode'));
 const GlobalOperationsCenter = lazy(() => import('./pages/GlobalOperationsCenter'));
@@ -510,6 +486,7 @@ const HealthArticles = lazy(() => import('./pages/HealthArticles'));
 const HealthDashboard = lazy(() => import('./pages/HealthDashboard'));
 const HealthGoals = lazy(() => import('./pages/HealthGoals'));
 const HelpCenter = lazy(() => import('./pages/HelpCenter'));
+const Home = lazy(() => import('./pages/Home'));
 const HopeAI = lazy(() => import('./pages/HopeAI'));
 const HopeAIAdvanced = lazy(() => import('./pages/HopeAIAdvanced'));
 const HopeAIMeta = lazy(() => import('./pages/HopeAIMeta'));
@@ -593,6 +570,7 @@ const MarketSentiment = lazy(() => import('./pages/MarketSentiment'));
 const MarketingROI = lazy(() => import('./pages/MarketingROI'));
 const Marketplace = lazy(() => import('./pages/Marketplace'));
 const MarketplaceAnalytics = lazy(() => import('./pages/MarketplaceAnalytics'));
+const MarketplaceSell = lazy(() => import('./pages/SellerDashboard'));
 const MasterArchitecture = lazy(() => import('./pages/MasterArchitecture'));
 const MatchChat = lazy(() => import('./pages/MatchChat'));
 const MatchFeed = lazy(() => import('./pages/MatchFeed'));
@@ -612,9 +590,11 @@ const Mentions = lazy(() => import('./pages/Mentions'));
 const MessageEncryption = lazy(() => import('./pages/MessageEncryption'));
 const MessageSearch = lazy(() => import('./pages/MessageSearch'));
 const Messages = lazy(() => import('./pages/Messages'));
+const Messaging = lazy(() => import('./pages/Messaging'));
 const MetaversePortal = lazy(() => import('./pages/MetaversePortal'));
 const MilestoneTracking = lazy(() => import('./pages/MilestoneTracking'));
 const MinerDashboard = lazy(() => import('./pages/MinerDashboard'));
+const Mining = lazy(() => import('./pages/Mining'));
 const MiningCalculator = lazy(() => import('./pages/MiningCalculator'));
 const MiningDashboard = lazy(() => import('./pages/MiningDashboard'));
 const MiningPoolSelector = lazy(() => import('./pages/MiningPoolSelector'));
@@ -659,6 +639,7 @@ const NetWorthTracker = lazy(() => import('./pages/NetWorthTracker'));
 const NetworkGraph = lazy(() => import('./pages/NetworkGraph'));
 const NetworkHealth = lazy(() => import('./pages/NetworkHealth'));
 const NetworkStatistics = lazy(() => import('./pages/NetworkStatistics'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 const NotesApp = lazy(() => import('./pages/NotesApp'));
 const NotificationCenter = lazy(() => import('./pages/NotificationCenter'));
 const NotificationHistory = lazy(() => import('./pages/NotificationHistory'));
@@ -682,6 +663,7 @@ const OrderHistory = lazy(() => import('./pages/OrderHistory'));
 const OrderPlacement = lazy(() => import('./pages/OrderPlacement'));
 const OrderTracking = lazy(() => import('./pages/OrderTracking'));
 const OrderTypes = lazy(() => import('./pages/OrderTypes'));
+const Orders = lazy(() => import('./pages/Orders'));
 const OrganizationSettings = lazy(() => import('./pages/OrganizationSettings'));
 const P2EShop = lazy(() => import('./pages/P2EShop'));
 const Pagination = lazy(() => import('./pages/Pagination'));
@@ -755,6 +737,7 @@ const ProfilePicture = lazy(() => import('./pages/ProfilePicture'));
 const ProfilePreview = lazy(() => import('./pages/ProfilePreview'));
 const ProfileView = lazy(() => import('./pages/ProfileView'));
 const ProfileWallet = lazy(() => import('./pages/ProfileWallet'));
+const Profiles = lazy(() => import('./pages/Profiles'));
 const Profitability = lazy(() => import('./pages/Profitability'));
 const ProgressBar = lazy(() => import('./pages/ProgressBar'));
 const ProgressTracking = lazy(() => import('./pages/ProgressTracking'));
@@ -809,6 +792,7 @@ const Reputation = lazy(() => import('./pages/Reputation'));
 const ReputationSystem = lazy(() => import('./pages/ReputationSystem'));
 const ResourceAllocation = lazy(() => import('./pages/ResourceAllocation'));
 const ResourceLibrary = lazy(() => import('./pages/ResourceLibrary'));
+const Resources = lazy(() => import('./pages/Resources'));
 const ResponseTime = lazy(() => import('./pages/ResponseTime'));
 const Retention = lazy(() => import('./pages/Retention'));
 const RetentionAnalytics = lazy(() => import('./pages/RetentionAnalytics'));
@@ -821,6 +805,7 @@ const ReviewModeration = lazy(() => import('./pages/ReviewModeration'));
 const Reviews = lazy(() => import('./pages/Reviews'));
 const ReviewsRatings = lazy(() => import('./pages/ReviewsRatings'));
 const RewardSystem = lazy(() => import('./pages/RewardSystem'));
+const Rewards = lazy(() => import('./pages/Rewards'));
 const RewardsMonitoring = lazy(() => import('./pages/RewardsMonitoring'));
 const RewardsTracking = lazy(() => import('./pages/RewardsTracking'));
 const RiskAnalysis = lazy(() => import('./pages/RiskAnalysis'));
@@ -924,6 +909,7 @@ const Status = lazy(() => import('./pages/Status'));
 const StepperWizard = lazy(() => import('./pages/StepperWizard'));
 const StockChart = lazy(() => import('./pages/StockChart'));
 const StockSearch = lazy(() => import('./pages/StockSearch'));
+const Stocks = lazy(() => import('./pages/Stocks'));
 const Stories = lazy(() => import('./pages/Stories'));
 const StreamAnalytics = lazy(() => import('./pages/StreamAnalytics'));
 const StreamClip = lazy(() => import('./pages/StreamClip'));
@@ -1024,6 +1010,7 @@ const TripPlanner = lazy(() => import('./pages/TripPlanner'));
 const TrumpMining = lazy(() => import('./pages/TrumpMining'));
 const TrustSafetyDashboard = lazy(() => import('./pages/TrustSafetyDashboard'));
 const TrustSystem = lazy(() => import('./pages/TrustSystem'));
+const Tutorials = lazy(() => import('./pages/Tutorials'));
 const TwoFactorAuth = lazy(() => import('./pages/TwoFactorAuth'));
 const TwoFactorSetup = lazy(() => import('./pages/TwoFactorSetup'));
 const TypingIndicators = lazy(() => import('./pages/TypingIndicators'));
@@ -1055,6 +1042,7 @@ const UserSearch = lazy(() => import('./pages/UserSearch'));
 const UserStats = lazy(() => import('./pages/UserStats'));
 const UserSuggestions = lazy(() => import('./pages/UserSuggestions'));
 const UserTimeline = lazy(() => import('./pages/UserTimeline'));
+const Utilities = lazy(() => import('./pages/Utilities'));
 const VODArchive = lazy(() => import('./pages/VODArchive'));
 const ValidatorPerformance = lazy(() => import('./pages/ValidatorPerformance'));
 const ValidatorSetup = lazy(() => import('./pages/ValidatorSetup'));
@@ -1108,9 +1096,9 @@ const WorldSimulationControl = lazy(() => import('./pages/WorldSimulationControl
 const YieldFarming = lazy(() => import('./pages/YieldFarming'));
 const ZapierIntegration = lazy(() => import('./pages/ZapierIntegration'));
 const ZeroKnowledgeProof = lazy(() => import('./pages/ZeroKnowledgeProof'));
-const Home = lazy(() => import('./pages/Home'));
-const NotFound = lazy(() => import('./pages/NotFound'));
-
+const MFASetup = lazy(() => import('./pages/MFASetup').then(m => ({ default: m.MFASetup })));
+const MFAChallengePage = lazy(() => import('./pages/MFAChallenge').then(m => ({ default: m.MFAChallengePage })));
+const MFASettings = lazy(() => import('./pages/MFASettings').then(m => ({ default: m.MFASettings })));
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark">
@@ -2192,7 +2180,7 @@ export default function App() {
           <Route path="/tournaments" component={Tournaments} />
           <Route path="/rewards" component={Rewards} />
           <Route path="/marketplace" component={Marketplace} />
-          <Route path="/marketplace-sell" component={MarketplaceSellPage} />
+          <Route path="/marketplace-sell" component={MarketplaceSell} />
           <Route path="/orders" component={Orders} />
           <Route path="/auctions" component={Auctions} />
           <Route path="/courses" component={Courses} />
@@ -2211,7 +2199,7 @@ export default function App() {
           <Route path="/utilities" component={Utilities} />
           <Route path="/converters" component={Converters} />
           <Route path="/generators" component={Generators} />
-          <Route path="/admin-dashboard" component={AdminDashboardPage} />
+          <Route path="/admin-dashboard" component={AdminDashboard} />
           <Route path="/admin-users" component={AdminUsers} />
           <Route path="/admin-settings" component={AdminSettings} />
           <Route path="/admin-reports" component={AdminReports} />

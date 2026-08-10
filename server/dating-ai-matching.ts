@@ -4,14 +4,14 @@ import { eq, and, ne, not, inArray, or as drizzleOr, gte, lte } from 'drizzle-or
 import { invokeLLM } from './_core/llm';
 
 export interface MatchingProfile {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   age: number | null;
   gender: string | null;
   lookingFor: string | null;
   bio: string | null;
   interests: string[];
-  height: string | null;
+  height: number | null;
   bodyType: string | null;
   ethnicity: string | null;
   religion: string | null;
@@ -21,7 +21,7 @@ export interface MatchingProfile {
 }
 
 export interface CompatibilityScore {
-  userId: number;
+  userId: string;
   score: number;
   reasons: string[];
   matchType: 'perfect' | 'great' | 'good' | 'fair';
@@ -132,7 +132,7 @@ Consider:
  * Get recommended matches for a user
  */
 export async function getRecommendedMatches(
-  userId: number,
+  userId: string,
   limit: number = 10
 ): Promise<CompatibilityScore[]> {
   try {
@@ -217,7 +217,7 @@ export async function getRecommendedMatches(
             gender: userProfile.gender,
             lookingFor: userProfile.lookingFor,
             bio: userProfile.bio,
-            interests: (userProfile.interests as string[]) || [],
+            interests: typeof userProfile.interests === 'string' ? JSON.parse(userProfile.interests) : (userProfile.interests || []),
             height: userProfile.height,
             bodyType: userProfile.bodyType,
             ethnicity: userProfile.ethnicity,
@@ -233,7 +233,7 @@ export async function getRecommendedMatches(
             gender: candidate.gender,
             lookingFor: candidate.lookingFor,
             bio: candidate.bio,
-            interests: (candidate.interests as string[]) || [],
+            interests: typeof candidate.interests === 'string' ? JSON.parse(candidate.interests) : (candidate.interests || []),
             height: candidate.height,
             bodyType: candidate.bodyType,
             ethnicity: candidate.ethnicity,
@@ -256,7 +256,7 @@ export async function getRecommendedMatches(
 /**
  * Analyze user profile for improvement suggestions
  */
-export async function analyzeProfileForImprovements(userId: number): Promise<string[]> {
+export async function analyzeProfileForImprovements(userId: string): Promise<string[]> {
   try {
     const [profile] = await db
       .select()
@@ -271,7 +271,10 @@ export async function analyzeProfileForImprovements(userId: number): Promise<str
 Analyze this dating profile and suggest improvements:
 
 Bio: ${profile.bio || 'Empty'}
-Interests: ${(profile.interests as string[])?.join(', ') || 'Not specified'}
+Interests: ${(() => {
+      const ints = typeof profile.interests === 'string' ? JSON.parse(profile.interests) : (profile.interests || []);
+      return Array.isArray(ints) ? ints.join(', ') : 'Not specified';
+    })()}
 Photos: ${profile.photos ? 'Has photos' : 'No photos'}
 Height: ${profile.height || 'Not specified'}
 Body Type: ${profile.bodyType || 'Not specified'}
@@ -295,7 +298,8 @@ Respond with a JSON array of strings.
       ],
     });
 
-    const content = response.choices?.[0]?.message?.content || '[]';
+    const rawContent = response.choices?.[0]?.message?.content || '[]';
+    const content = typeof rawContent === 'string' ? rawContent : JSON.stringify(rawContent);
     const suggestions = JSON.parse(content);
 
     return Array.isArray(suggestions) ? suggestions : [];
@@ -308,8 +312,8 @@ Respond with a JSON array of strings.
  * Get conversation starters based on profiles
  */
 export async function generateConversationStarters(
-  userId: number,
-  matchUserId: number
+  userId: string,
+  matchUserId: string
 ): Promise<string[]> {
   try {
     const [userProfile] = await db
@@ -331,12 +335,18 @@ Generate 5 creative and engaging conversation starters for a dating match based 
 
 Your Profile:
 - Bio: ${userProfile.bio || 'Not provided'}
-- Interests: ${(userProfile.interests as string[])?.join(', ') || 'Not specified'}
+- Interests: ${(() => {
+      const ints = typeof userProfile.interests === 'string' ? JSON.parse(userProfile.interests) : (userProfile.interests || []);
+      return Array.isArray(ints) ? ints.join(', ') : 'Not specified';
+    })()}
 - Occupation: ${userProfile.occupation || 'Not specified'}
 
 Match Profile:
 - Bio: ${matchProfile.bio || 'Not provided'}
-- Interests: ${(matchProfile.interests as string[])?.join(', ') || 'Not specified'}
+- Interests: ${(() => {
+      const ints = typeof matchProfile.interests === 'string' ? JSON.parse(matchProfile.interests) : (matchProfile.interests || []);
+      return Array.isArray(ints) ? ints.join(', ') : 'Not specified';
+    })()}
 - Occupation: ${matchProfile.occupation || 'Not specified'}
 
 Create conversation starters that:
@@ -362,7 +372,8 @@ Respond with a JSON array of 5 strings.
       ],
     });
 
-    const content = response.choices?.[0]?.message?.content || '[]';
+    const rawContent = response.choices?.[0]?.message?.content || '[]';
+    const content = typeof rawContent === 'string' ? rawContent : JSON.stringify(rawContent);
     const starters = JSON.parse(content);
 
     return Array.isArray(starters) ? starters : [];

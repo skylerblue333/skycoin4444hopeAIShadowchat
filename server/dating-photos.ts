@@ -5,7 +5,7 @@ import { datingProfiles } from '../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
 interface PhotoUploadOptions {
-  userId: number;
+  userId: string;
   file: Buffer;
   fileName: string;
   maxWidth?: number;
@@ -200,7 +200,7 @@ export async function validatePhotoFile(file: Buffer): Promise<{
 }
 
 export async function reorderProfilePhotos(
-  userId: number,
+  userId: string,
   photoOrder: string[]
 ): Promise<void> {
   try {
@@ -208,7 +208,7 @@ export async function reorderProfilePhotos(
     await db
       .update(datingProfiles)
       .set({
-        photos: photoOrder,
+        photos: JSON.stringify(photoOrder),
       })
       .where(eq(datingProfiles.userId, userId));
 

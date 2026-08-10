@@ -51,13 +51,17 @@ export async function createUser(data: SignUpData) {
     const hashedPassword = await bcrypt.hash(data.password, 12);
 
     // Create user
-    const result = await db.insert(users).values({
+    const userId = crypto.randomUUID();
+    await db.insert(users).values({
+      id: userId,
       email: data.email,
+      username: data.email.split('@')[0] + '_' + Math.random().toString(36).substring(7),
+      name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email.split('@')[0],
       password: hashedPassword,
       firstName: data.firstName,
       lastName: data.lastName,
       phone: data.phone,
-      dateOfBirth: data.dateOfBirth,
+      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
       profileComplete: false,
       emailVerified: false,
       createdAt: new Date(),
@@ -65,7 +69,7 @@ export async function createUser(data: SignUpData) {
 
     return {
       success: true,
-      userId: result.insertId,
+      userId,
       message: 'Account created successfully',
     };
   } catch (error) {
@@ -98,8 +102,13 @@ export async function socialLogin(data: SocialLoginData) {
     }
 
     // Create new user from social login
-    const result = await db.insert(users).values({
+    const userId = crypto.randomUUID();
+    await db.insert(users).values({
+      id: userId,
       email: data.email,
+      username: data.email.split('@')[0] + '_' + Math.random().toString(36).substring(7),
+      name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email.split('@')[0],
+      password: 'SOCIAL_LOGIN_' + crypto.randomUUID(),
       firstName: data.firstName,
       lastName: data.lastName,
       profileImage: data.profileImage,
@@ -110,7 +119,7 @@ export async function socialLogin(data: SocialLoginData) {
 
     return {
       success: true,
-      userId: result.insertId,
+      userId,
       isNewUser: true,
       message: 'Account created from social login',
     };

@@ -1014,7 +1014,7 @@ export const communityCore = {
     return rolePermissions.assignRole(serverId, targetUserId, roleId);
   },
   generateInviteCode(serverId: string, userId: number, maxUses?: number, expiresInHours?: number) {
-    const code = `inv_${Date.now()}_${(crypto.getRandomValues(new Uint8Array(1))[0] / 256).toString(36).slice(2, 8)}`;
+    const code = `inv_${Date.now()}_${crypto.randomBytes(6).toString('hex')}`;
     return Promise.resolve({ code, serverId, createdBy: userId, maxUses, expiresAt: expiresInHours ? new Date(Date.now() + expiresInHours * 3600000) : null });
   },
   getServerStats(serverId: string) {

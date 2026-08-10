@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-// @ts-nocheck
 import { getDb, placeTrade, updateWalletBalance, getWallet } from "./db";
 import { trades } from "../drizzle";
 import { eq } from "drizzle-orm";
@@ -95,7 +94,7 @@ export function startPriceSimulation() {
 
 // ─── ORDER EXECUTION ────────────────────────────────────────────────────
 export async function executeMarketOrder(
-  userId: number,
+  userId: string,
   pair: string,
   side: "buy" | "sell",
   amount: number
@@ -158,7 +157,7 @@ export async function executeMarketOrder(
 }
 
 export async function executeLimitOrder(
-  userId: number,
+  userId: string,
   pair: string,
   side: "buy" | "sell",
   amount: number,
@@ -192,7 +191,7 @@ export async function executeLimitOrder(
 }
 
 export async function executeStopOrder(
-  userId: number,
+  userId: string,
   pair: string,
   side: "buy" | "sell",
   amount: number,

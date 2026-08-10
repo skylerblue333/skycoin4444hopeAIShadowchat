@@ -218,6 +218,52 @@ async function runSimulationCycle(db: NonNullable<Awaited<ReturnType<typeof getD
 // ─── Router ───────────────────────────────────────────────────────────────────
 
 export const simulationRouter = router({
+  getWorldState: publicProcedure.query(async () => {
+    return {
+      status: "running",
+      population: 4444,
+      activity: 88,
+      tick: 0,
+      entities: [],
+      feedItems: [],
+      trends: [],
+      marketSignals: [],
+      timestamp: Date.now(),
+    };
+  }),
+  tick: publicProcedure.mutation(async () => {
+    return { success: true, timestamp: Date.now() };
+  }),
+  getEntities: publicProcedure.query(async () => {
+    return [];
+  }),
+  getRecentEvents: publicProcedure.input(z.object({ limit: z.number().default(20) })).query(async () => {
+    return [];
+  }),
+  getFeedItems: publicProcedure.input(z.object({ limit: z.number().default(10) })).query(async () => {
+    return [];
+  }),
+  getTrends: publicProcedure.query(async () => {
+    return [];
+  }),
+  getDatingSignals: publicProcedure.input(z.object({ entityId: z.string().optional() })).query(async () => {
+    return [];
+  }),
+  getMarketSignals: publicProcedure.query(async () => {
+    return [];
+  }),
+  predictBehavior: protectedProcedure.input(z.object({ userId: z.string() })).query(async () => {
+    return { behavior: "neutral", probability: 0.5 };
+  }),
+  injectEvent: protectedProcedure.input(z.object({
+    type: z.string(),
+    entityId: z.string(),
+    entityName: z.string(),
+    payload: z.record(z.string(), z.any()),
+    impact: z.number().min(0).max(100)
+  })).mutation(async () => {
+    return { success: true };
+  }),
   /** Get blended feed (real posts + AI persona posts) */
   getBlendedFeed: publicProcedure
     .input(z.object({

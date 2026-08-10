@@ -1,6 +1,6 @@
 import { exec, spawn } from 'child_process';
 import { promisify } from 'util';
-import { writeFileSync, readFileSync, existsSync, mkdirSync, createWriteStream, statSync, promises as fsPromises } from 'fs';
+import { writeFileSync, readFileSync, existsSync, mkdirSync, createWriteStream, createReadStream, statSync, promises as fsPromises } from 'fs';
 import { join } from 'path';
 import { notifyOwner } from './_core/notification';
 

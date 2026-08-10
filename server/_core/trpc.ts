@@ -32,7 +32,7 @@ const requireRoleMiddleware = (roles: UserRole[]) => t.middleware(async ({ ctx, 
   if (!ctx.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED', message: UNAUTHED_ERR_MSG });
   }
-  if (!roles.includes(ctx.user.role)) {
+  if (!roles.includes(ctx.user.role as UserRole)) {
     throw new TRPCError({ code: 'FORBIDDEN', message: NOT_ADMIN_ERR_MSG });
   }
   return next({

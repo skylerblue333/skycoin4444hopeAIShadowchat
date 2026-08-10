@@ -5,9 +5,9 @@ import { eq, and } from 'drizzle-orm';
 
 export interface VideoCallSession {
   id: string;
-  matchId: number;
-  initiatorId: number;
-  recipientId: number;
+  matchId: string;
+  initiatorId: string;
+  recipientId: string;
   status: 'pending' | 'active' | 'ended';
   startedAt?: Date;
   endedAt?: Date;
@@ -35,9 +35,9 @@ export function generateCallId(): string {
 }
 
 export async function initiateVideoCall(
-  matchId: number,
-  initiatorId: number,
-  recipientId: number
+  matchId: string,
+  initiatorId: string,
+  recipientId: string
 ): Promise<VideoCallSession> {
   const callId = generateCallId();
 

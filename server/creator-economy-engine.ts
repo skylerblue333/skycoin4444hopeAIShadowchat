@@ -13,6 +13,7 @@
  * - Creator Milestones and Achievements
  */
 
+import crypto from 'crypto';
 import { getDb } from "./db";
 import * as schema from "../drizzle";
 import { eq, and, desc, sql, gte, lte, count, sum } from "drizzle-orm";
@@ -23,7 +24,7 @@ import { eq, and, desc, sql, gte, lte, count, sum } from "drizzle-orm";
 
 export interface SubscriptionTier {
   id: string;
-  creatorId: number;
+  creatorId: string;
   name: string;
   price: number;
   currency: string;
@@ -51,7 +52,7 @@ export interface RevenueSplit {
 
 export interface PayoutSchedule {
   id: string;
-  creatorId: number;
+  creatorId: string;
   frequency: "weekly" | "biweekly" | "monthly" | "threshold";
   threshold?: number;
   nextPayoutDate: Date;
@@ -67,7 +68,7 @@ export interface CreatorAnalytics {
   weeklyEarnings: number;
   subscriberCount: number;
   subscriberGrowth: number;
-  topContent: { postId: number; title: string; earnings: number; views: number }[];
+  topContent: { postId: string; title: string; earnings: number; views: number }[];
   earningsBySource: { source: string; amount: number; percent: number }[];
   engagementRate: number;
   avgTipAmount: number;
@@ -75,7 +76,7 @@ export interface CreatorAnalytics {
 }
 
 export interface FanScore {
-  userId: number;
+  userId: string;
   score: number;
   tier: "superfan" | "loyal" | "casual" | "dormant";
   totalSpent: number;
@@ -115,11 +116,11 @@ export class SubscriptionTierService {
     { id: "vip", name: "VIP", price: 50, currency: "SKY444", benefits: ["All premium benefits", "Monthly call", "Custom content", "Revenue share"], maxSubscribers: 50, isActive: true },
   ];
 
-  getDefaultTiers(creatorId: number): SubscriptionTier[] {
+  getDefaultTiers(creatorId: string): SubscriptionTier[] {
     return this.DEFAULT_TIERS.map(t => ({ ...t, creatorId, subscriberCount: 0 }));
   }
 
-  async getCreatorTiers(creatorId: number): Promise<SubscriptionTier[]> {
+  async getCreatorTiers(creatorId: string): Promise<SubscriptionTier[]> {
     const db = await getDb();
     if (!db) return this.getDefaultTiers(creatorId);
 
@@ -144,7 +145,7 @@ export class SubscriptionTierService {
     }));
   }
 
-  async subscribe(subscriberId: number, creatorId: number, tierId: string): Promise<{ success: boolean; message: string }> {
+  async subscribe(subscriberId: string, creatorId: string, tierId: string): Promise<{ success: boolean; message: string }> {
     const db = await getDb();
     if (!db) return { success: false, message: "Database unavailable" };
 
@@ -191,6 +192,8 @@ export class SubscriptionTierService {
     const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
     await db.insert(schema.creatorSubscriptions).values({
+      id: crypto.randomUUID(),
+      userId: subscriberId,
       subscriberId,
       creatorId,
       tier: tierMapping[tierId] || "supporter",
@@ -202,7 +205,7 @@ export class SubscriptionTierService {
     return { success: true, message: `Subscribed to ${tier.name} tier` };
   }
 
-  async unsubscribe(subscriberId: number, creatorId: number): Promise<boolean> {
+  async unsubscribe(subscriberId: string, creatorId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -259,7 +262,7 @@ export class RevenueSplitCalculator {
 // ═══════════════════════════════════════════════════════════════
 
 export class PayoutSchedulingService {
-  async getPayoutSchedule(creatorId: number): Promise<PayoutSchedule> {
+  async getPayoutSchedule(creatorId: string): Promise<PayoutSchedule> {
     // Default schedule
     return {
       id: `sched_${creatorId}`,
@@ -272,7 +275,7 @@ export class PayoutSchedulingService {
     };
   }
 
-  async getPendingPayout(creatorId: number): Promise<{ amount: number; period: string; breakdown: { source: string; amount: number }[] }> {
+  async getPendingPayout(creatorId: string): Promise<{ amount: number; period: string; breakdown: { source: string; amount: number }[] }> {
     const db = await getDb();
     if (!db) return { amount: 0, period: "current", breakdown: [] };
 
@@ -329,7 +332,7 @@ export class PayoutSchedulingService {
 // ═══════════════════════════════════════════════════════════════
 
 export class CreatorAnalyticsService {
-  async getAnalytics(creatorId: number): Promise<CreatorAnalytics> {
+  async getAnalytics(creatorId: string): Promise<CreatorAnalytics> {
     const db = await getDb();
     if (!db) return { totalEarnings: 0, monthlyEarnings: 0, weeklyEarnings: 0, subscriberCount: 0, subscriberGrowth: 0, topContent: [], earningsBySource: [], engagementRate: 0, avgTipAmount: 0, conversionRate: 0 };
 
@@ -403,7 +406,7 @@ export class CreatorAnalyticsService {
 // ═══════════════════════════════════════════════════════════════
 
 export class FanEngagementService {
-  async getTopFans(creatorId: number, limit = 20): Promise<FanScore[]> {
+  async getTopFans(creatorId: string, limit = 20): Promise<FanScore[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -482,7 +485,7 @@ export class CreatorMilestoneService {
     { id: "10000_earnings", name: "Top Earner", description: "Earn 10,000 SKY444 total", requirement: { metric: "total_earnings", target: 10000 }, reward: { type: "badge", value: "Top Earner" } },
   ];
 
-  async getMilestones(creatorId: number): Promise<CreatorMilestone[]> {
+  async getMilestones(creatorId: string): Promise<CreatorMilestone[]> {
     const db = await getDb();
     if (!db) return this.MILESTONES.map(m => ({ ...m, progress: 0, isCompleted: false }));
 
@@ -548,7 +551,7 @@ export class CreatorMilestoneService {
 // ═══════════════════════════════════════════════════════════════
 
 export class RevenueForecastingService {
-  async forecast(creatorId: number, months = 6): Promise<RevenueForcast[]> {
+  async forecast(creatorId: string, months = 6): Promise<RevenueForcast[]> {
     const db = await getDb();
     if (!db) return [];
 

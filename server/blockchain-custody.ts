@@ -34,7 +34,8 @@ import { HDKey } from "@scure/bip32";
 import { getDb } from "./db.js";
 import { eventBus } from "./event-bus.js";
 import { custodyWallets, onChainTransactions } from "../drizzle/schema.js";
-import { eq, and, desc } from "drizzle-orm";
+import crypto from 'crypto';
+import { eq, and, desc, sql } from "drizzle-orm";
 
 // ─── Supported Chains ─────────────────────────────────────────────────────────
 
@@ -50,8 +51,8 @@ export type SupportedChain = keyof typeof SUPPORTED_CHAINS;
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface WalletInfo {
-  id: number;
-  userId: number;
+  id: string;
+  userId: string;
   address: string;
   derivationPath: string;
   chainId: number;
@@ -81,7 +82,7 @@ export interface TransactionRequest {
 }
 
 export interface SignedTransaction {
-  txId: number;
+  txId: string;
   signedHex: string;
   txHash: string;
   fromAddress: string;
@@ -92,7 +93,7 @@ export interface SignedTransaction {
 }
 
 export interface BroadcastResult {
-  txId: number;
+  txId: string;
   txHash: string;
   status: "broadcast" | "failed";
   errorMessage?: string;
@@ -114,7 +115,7 @@ export class BlockchainCustodyService {
    *
    * SECURITY: Master seed comes from env var only — never hardcoded.
    */
-  deriveUserAddress(userId: number, accountIndex = 0): { address: string; derivationPath: string } {
+  deriveUserAddress(userId: string, accountIndex = 0): { address: string; derivationPath: string } {
     const masterSeed = process.env.WALLET_MASTER_SEED;
     if (!masterSeed) {
       throw new Error("WALLET_MASTER_SEED environment variable not set");
@@ -149,7 +150,7 @@ export class BlockchainCustodyService {
    * Only the address and derivation path are stored — never the private key.
    */
   async registerWallet(
-    userId: number,
+    userId: string,
     chain: SupportedChain = "ethereum",
     label?: string
   ): Promise<WalletInfo> {
@@ -162,11 +163,11 @@ export class BlockchainCustodyService {
     const [existing] = await db
       .select()
       .from(custodyWallets)
-      .where(and(eq(custodyWallets.userId, userId), eq(custodyWallets.chainId, chainConfig.chainId)))
+      .where(and(eq(custodyWallets.userId, String(userId)), eq(custodyWallets.chainId, chainConfig.chainId)))
       .limit(1);
 
     if (existing) {
-      return existing as WalletInfo;
+      return existing as any as WalletInfo;
     }
 
     // Derive address
@@ -176,13 +177,15 @@ export class BlockchainCustodyService {
     const [anyWallet] = await db
       .select()
       .from(custodyWallets)
-      .where(eq(custodyWallets.userId, userId))
+      .where(eq(custodyWallets.userId, String(userId)))
       .limit(1);
 
     const isPrimary = !anyWallet;
+    const walletId = crypto.randomUUID();
 
-    const [result] = await db.insert(custodyWallets).values({
-      userId,
+    await db.insert(custodyWallets).values({
+      id: walletId,
+      userId: String(userId),
       address,
       derivationPath,
       chainId: chainConfig.chainId,
@@ -195,8 +198,6 @@ export class BlockchainCustodyService {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
-    const walletId = (result as { insertId: number }).insertId;
 
     eventBus.publish("WALLET_CREATED", {
       userId,
@@ -212,13 +213,13 @@ export class BlockchainCustodyService {
       .where(eq(custodyWallets.id, walletId))
       .limit(1);
 
-    return wallet as WalletInfo;
+    return wallet as any as WalletInfo;
   }
 
   /**
    * Get all wallets for a user.
    */
-  async getUserWallets(userId: number): Promise<WalletInfo[]> {
+  async getUserWallets(userId: string): Promise<WalletInfo[]> {
     const db = await getDb();
     if (!db) return [];
     const wallets = await db
@@ -251,7 +252,7 @@ export class BlockchainCustodyService {
    * Private key is derived ephemerally and immediately discarded.
    */
   async buildAndSignTransaction(
-    userId: number,
+    userId: string,
     request: TransactionRequest
   ): Promise<SignedTransaction> {
     const db = await getDb();
@@ -359,13 +360,16 @@ export class BlockchainCustodyService {
     ).toString();
 
     // Store in DB
-    const [insertResult] = await db.insert(onChainTransactions).values({
+    const txId = crypto.randomUUID();
+    await db.insert(onChainTransactions).values({
+      id: txId,
       userId,
       walletId: walletRecord.id,
       txHash,
       chainId: request.chainId,
       fromAddress: signer.address,
       toAddress: validation.checksumAddress!,
+      amount: ethers.formatEther(request.valueWei), // Required field
       valueWei: request.valueWei,
       gasLimit: txData.gasLimit?.toString() ?? null,
       maxFeePerGas: maxFeePerGas.toString(),
@@ -382,8 +386,6 @@ export class BlockchainCustodyService {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
-    const txId = (insertResult as { insertId: number }).insertId;
 
     eventBus.publish("TRANSACTION_SIGNED", {
       txId,
@@ -410,7 +412,7 @@ export class BlockchainCustodyService {
    * Broadcast a signed transaction to the network.
    * Clears signedTxHex from DB after broadcast.
    */
-  async broadcastTransaction(txId: number, userId: number): Promise<BroadcastResult> {
+  async broadcastTransaction(txId: string, userId: string): Promise<BroadcastResult> {
     const db = await getDb();
     if (!db) throw new Error("DB unavailable");
 
@@ -486,7 +488,7 @@ export class BlockchainCustodyService {
   /**
    * Get transaction history for a user.
    */
-  async getTransactionHistory(userId: number, limit = 50): Promise<typeof onChainTransactions.$inferSelect[]> {
+  async getTransactionHistory(userId: string, limit = 50): Promise<typeof onChainTransactions.$inferSelect[]> {
     const db = await getDb();
     if (!db) return [];
     return db
@@ -597,7 +599,7 @@ export class BlockchainCustodyService {
    * Poll for transaction confirmation (non-blocking, runs in background).
    */
   private async pollConfirmation(
-    txId: number,
+    txId: string,
     txHash: string,
     chainId: number,
     provider: ethers.JsonRpcProvider,

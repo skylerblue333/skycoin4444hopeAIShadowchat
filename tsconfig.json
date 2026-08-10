@@ -31,7 +31,8 @@
       "@server/*": ["server/*"],
       "@shared/*": ["shared/*"],
       "@types/*": ["client/src/shared/types/*"]
-    }
+    },
+    "types": ["vite/client"]
   },
   "include": ["client", "server", "shared"],
   "exclude": ["**/*.test.ts"],

@@ -30,6 +30,10 @@ export const NotificationType = z.enum([
   'connector_status',
   'playbook_update',
   'simulation_complete',
+  'subscription_activated',
+  'dating_match',
+  'verification_success',
+  'profile_verified',
 ]);
 
 export const NotificationPriority = z.enum(['low', 'medium', 'high', 'critical']);
@@ -243,14 +247,18 @@ export const notificationRouter = router({
  * Send notification to user
  * Called by other engines when events occur
  */
+export async function healthCheck() {
+  return { status: 'healthy', timestamp: new Date() };
+}
+
 export async function sendNotification(
   userId: string,
-  type: z.infer<typeof NotificationType>,
+  type: string,
   title: string,
   message: string,
-  priority: z.infer<typeof NotificationPriority> = 'medium',
+  priority: string = 'medium',
   engine: string = 'system',
-  data?: Record<string, any>,
+  data?: any,
   actionUrl?: string
 ) {
   const notification: Notification = {

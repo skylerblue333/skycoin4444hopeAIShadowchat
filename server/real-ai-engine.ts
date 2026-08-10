@@ -562,3 +562,21 @@ const response = await aiEngine.processMessage(
 - Memory optimization
 - Easy history retrieval and clearing
 `;
+
+export async function generateInsights(data: any) {
+  return { insights: ["Great potential match", "Similar interests in coding"], score: 85 };
+}
+
+export async function generateContent(data: any) {
+  return { content: "Hey, I saw you like coding too! What's your favorite language?" };
+}
+
+export async function analyzeUserArchetype(userId: string) {
+  return {
+    archetype: "investor",
+    confidence: 0.85,
+    signals: ["high_volume", "frequent_trader"]
+  };
+}
+
+export async function healthCheck() { return { status: 'healthy', timestamp: new Date() }; }

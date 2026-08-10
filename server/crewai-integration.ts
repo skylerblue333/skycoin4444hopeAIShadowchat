@@ -1,4 +1,4 @@
-import { invokeLLM } from './server/_core/llm';
+import { invokeLLM } from './_core/llm';
 
 interface Agent {
   id: string;
@@ -62,7 +62,7 @@ Provide your analysis and solution:`;
       const result: CrewResult = {
         taskId,
         agentId: task.agentId,
-        result: response.choices[0].message.content,
+        result: typeof response.choices[0].message.content === 'string' ? response.choices[0].message.content : JSON.stringify(response.choices[0].message.content),
         reasoning: `Executed by ${agent.role}`
       };
 

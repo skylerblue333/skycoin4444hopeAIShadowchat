@@ -11,13 +11,13 @@ export type ReportReason =
   | 'other';
 
 export interface BlockUser {
-  blockerId: number;
-  blockedUserId: number;
+  userId: string;
+  blockedUserId: string;
 }
 
 export interface ReportUser {
-  reporterId: number;
-  reportedUserId: number;
+  reporterId: string;
+  reportedUserId: string;
   reason: ReportReason;
   description?: string;
 }
@@ -33,7 +33,7 @@ export async function blockUser(data: BlockUser) {
       .from(datingBlocks)
       .where(
         and(
-          eq(datingBlocks.blockerId, data.blockerId),
+          eq(datingBlocks.userId, data.userId),
           eq(datingBlocks.blockedUserId, data.blockedUserId)
         )
       );
@@ -42,12 +42,14 @@ export async function blockUser(data: BlockUser) {
       throw new Error('User already blocked');
     }
 
-    const result = await db
+    await db
       .insert(datingBlocks)
-      .values(data)
-      .returning();
+      .values({
+        id: crypto.randomUUID(),
+        ...data
+      });
 
-        return result[0];
+    return { success: true };
   } catch (error) {
         throw error;
   }
@@ -56,13 +58,13 @@ export async function blockUser(data: BlockUser) {
 /**
  * Unblock a user
  */
-export async function unblockUser(blockerId: number, blockedUserId: number) {
+export async function unblockUser(userId: string, blockedUserId: string) {
   try {
     const result = await db
       .delete(datingBlocks)
       .where(
         and(
-          eq(datingBlocks.blockerId, blockerId),
+          eq(datingBlocks.userId, userId),
           eq(datingBlocks.blockedUserId, blockedUserId)
         )
       );
@@ -76,15 +78,15 @@ export async function unblockUser(blockerId: number, blockedUserId: number) {
 /**
  * Check if a user is blocked
  */
-export async function isUserBlocked(blockerId: number, userId: number): Promise<boolean> {
+export async function isUserBlocked(userId: string, targetUserId: string): Promise<boolean> {
   try {
     const blocked = await db
       .select()
       .from(datingBlocks)
       .where(
         and(
-          eq(datingBlocks.blockerId, blockerId),
-          eq(datingBlocks.blockedUserId, userId)
+          eq(datingBlocks.userId, userId),
+          eq(datingBlocks.blockedUserId, targetUserId)
         )
       );
 
@@ -97,12 +99,12 @@ export async function isUserBlocked(blockerId: number, userId: number): Promise<
 /**
  * Get list of blocked users
  */
-export async function getBlockedUsers(userId: number) {
+export async function getBlockedUsers(userId: string) {
   try {
     const blocks = await db
       .select()
       .from(datingBlocks)
-      .where(eq(datingBlocks.blockerId, userId));
+      .where(eq(datingBlocks.userId, userId));
 
     return blocks;
   } catch (error) {
@@ -130,24 +132,23 @@ export async function reportUser(data: ReportUser) {
       throw new Error('User already reported');
     }
 
-    const result = await db
+    await db
       .insert(datingReports)
       .values({
+        id: crypto.randomUUID(),
         ...data,
         status: 'pending',
-      })
-      .returning();
+      });
 
-    
     // Auto-block the reported user
     await blockUser({
-      blockerId: data.reporterId,
+      userId: data.reporterId,
       blockedUserId: data.reportedUserId,
     }).catch(() => {
       // Already blocked, ignore
     });
 
-    return result[0];
+    return { success: true };
   } catch (error) {
         throw error;
   }
@@ -173,7 +174,7 @@ export async function getPendingReports(limit = 50) {
 /**
  * Get reports for a specific user
  */
-export async function getUserReports(userId: number) {
+export async function getUserReports(userId: string) {
   try {
     const reports = await db
       .select()
@@ -190,7 +191,7 @@ export async function getUserReports(userId: number) {
  * Resolve a report (approve or dismiss)
  */
 export async function resolveReport(
-  reportId: number,
+  reportId: string,
   action: 'approved' | 'dismissed',
   moderatorNotes?: string
 ) {
@@ -198,7 +199,7 @@ export async function resolveReport(
     const result = await db
       .update(datingReports)
       .set({
-        status: (action === 'approved' ? 'resolved' : 'dismissed') as const,
+        status: action === 'approved' ? 'resolved' : 'dismissed',
         moderatorNotes,
         resolvedAt: new Date(),
       })
@@ -222,17 +223,16 @@ export async function resolveReport(
 /**
  * Suspend a user profile
  */
-export async function suspendProfile(userId: number, reason: string) {
+export async function suspendProfile(userId: string, reason: string) {
   try {
-    const result = await db
+    await db
       .update(datingProfiles)
       .set({
         suspended: true,
       })
-      .where(eq(datingProfiles.userId, userId))
-      .returning();
+      .where(eq(datingProfiles.userId, userId));
 
-        return result[0];
+    return { success: true };
   } catch (error) {
         throw error;
   }
@@ -241,17 +241,16 @@ export async function suspendProfile(userId: number, reason: string) {
 /**
  * Unsuspend a user profile
  */
-export async function unsuspendProfile(userId: number) {
+export async function unsuspendProfile(userId: string) {
   try {
-    const result = await db
+    await db
       .update(datingProfiles)
       .set({
         suspended: false,
       })
-      .where(eq(datingProfiles.userId, userId))
-      .returning();
+      .where(eq(datingProfiles.userId, userId));
 
-        return result[0];
+    return { success: true };
   } catch (error) {
         throw error;
   }
@@ -260,7 +259,7 @@ export async function unsuspendProfile(userId: number) {
 /**
  * Check if profile is suspended
  */
-export async function isProfileSuspended(userId: number): Promise<boolean> {
+export async function isProfileSuspended(userId: string): Promise<boolean> {
   try {
     const profile = await db
       .select()

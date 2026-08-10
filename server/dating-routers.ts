@@ -112,13 +112,14 @@ router.patch('/api/dating/profile', async (req: any, res) => {
         .where(eq(datingProfiles.userId, userId));
     } else {
       await db.insert(datingProfiles).values({
+        id: crypto.randomUUID(),
         userId,
         age,
         gender,
         lookingFor,
         bio,
-        interests,
-        photos,
+        interests: JSON.stringify(interests || []),
+        photos: JSON.stringify(photos || []),
         height,
         bodyType,
         ethnicity,
@@ -158,8 +159,8 @@ router.get('/api/dating/matches/recommended', async (req: any, res) => {
 // Like user
 router.post('/api/dating/like/:targetUserId', async (req: any, res) => {
   try {
-    const userId = req.user?.id;
-    const targetUserId = parseInt(req.params.targetUserId);
+    const userId = req.user?.id as string;
+    const targetUserId = req.params.targetUserId as string;
 
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (userId === targetUserId) return res.status(400).json({ error: 'Cannot like yourself' });
@@ -198,9 +199,12 @@ router.post('/api/dating/like/:targetUserId', async (req: any, res) => {
 
     if (mutualLike.length) {
       // Create match
-      const match = await db.insert(datingMatches).values({
-        user1Id: Math.min(userId, targetUserId),
-        user2Id: Math.max(userId, targetUserId),
+      const [u1, u2] = [userId, targetUserId].sort();
+      await db.insert(datingMatches).values({
+        id: crypto.randomUUID(),
+        user1Id: u1,
+        user2Id: u2,
+        status: 'matched',
         matchType: 'mutual_like',
         isMutual: true,
       });
@@ -217,8 +221,8 @@ router.post('/api/dating/like/:targetUserId', async (req: any, res) => {
 // Super like user
 router.post('/api/dating/superlike/:targetUserId', async (req: any, res) => {
   try {
-    const userId = req.user?.id;
-    const targetUserId = parseInt(req.params.targetUserId);
+    const userId = req.user?.id as string;
+    const targetUserId = req.params.targetUserId as string;
 
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     if (userId === targetUserId) return res.status(400).json({ error: 'Cannot superlike yourself' });
@@ -244,6 +248,7 @@ router.post('/api/dating/superlike/:targetUserId', async (req: any, res) => {
 
     // Create super like
     await db.insert(datingLikes).values({
+      id: crypto.randomUUID(),
       userId,
       likedUserId: targetUserId,
       type: 'superlike',
@@ -257,9 +262,12 @@ router.post('/api/dating/superlike/:targetUserId', async (req: any, res) => {
 
     if (mutualLike.length) {
       // Create match
+      const [u1, u2] = [userId, targetUserId].sort();
       await db.insert(datingMatches).values({
-        user1Id: Math.min(userId, targetUserId),
-        user2Id: Math.max(userId, targetUserId),
+        id: crypto.randomUUID(),
+        user1Id: u1,
+        user2Id: u2,
+        status: 'matched',
         matchType: 'mutual_superlike',
         isMutual: true,
       });
@@ -276,8 +284,8 @@ router.post('/api/dating/superlike/:targetUserId', async (req: any, res) => {
 // Pass on user
 router.post('/api/dating/pass/:targetUserId', async (req: any, res) => {
   try {
-    const userId = req.user?.id;
-    const targetUserId = parseInt(req.params.targetUserId);
+    const userId = req.user?.id as string;
+    const targetUserId = req.params.targetUserId as string;
 
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -392,11 +400,11 @@ router.get('/api/dating/profile/suggestions', async (req: any, res) => {
 router.get('/api/dating/conversation-starters/:matchUserId', async (req: any, res) => {
   try {
     const userId = req.user?.id;
-    const matchUserId = parseInt(req.params.matchUserId);
+    const matchUserId = req.params.matchUserId;
 
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    const starters = await generateConversationStarters(userId, matchUserId);
+    const starters = await generateConversationStarters(userId as string, matchUserId);
 
     res.json({ starters });
   } catch (error) {

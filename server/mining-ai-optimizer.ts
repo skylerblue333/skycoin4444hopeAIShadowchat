@@ -1,4 +1,4 @@
-import { invokeLLM } from './server/_core/llm';
+import { invokeLLM } from './_core/llm';
 
 interface MiningPool {
   name: string;

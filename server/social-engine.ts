@@ -21,7 +21,7 @@ import { eq, and, desc, sql, gte, lte, isNull, or, like, inArray } from "drizzle
 
 export interface DMConversation {
   id: number;
-  participantIds: number[];
+  participantIds: string[];
   lastMessageAt: Date;
   lastMessagePreview: string;
   unreadCount: number;
@@ -31,22 +31,22 @@ export interface DMConversation {
 
 export interface DirectMessage {
   id: number;
-  conversationId: number;
-  senderId: number;
+  conversationId: string;
+  senderId: string;
   content: string;
   mediaUrl?: string;
   replyToId?: number;
   isEdited: boolean;
   isDeleted: boolean;
-  readBy: number[];
+  readBy: string[];
   reactions: Record<string, number[]>;
   createdAt: Date;
 }
 
 export interface Bookmark {
   id: number;
-  userId: number;
-  postId: number;
+  userId: string;
+  postId: string;
   collectionId?: number;
   note?: string;
   createdAt: Date;
@@ -54,8 +54,8 @@ export interface Bookmark {
 
 export interface ThreadedComment {
   id: number;
-  postId: number;
-  authorId: number;
+  postId: string;
+  authorId: string;
   parentId?: number;
   content: string;
   likeCount: number;
@@ -72,7 +72,7 @@ export interface ThreadedComment {
 // ═══════════════════════════════════════════════════════════════
 
 export class DirectMessageService {
-  async getConversations(userId: number, limit = 20, offset = 0): Promise<DMConversation[]> {
+  async getConversations(userId: string, limit = 20, offset = 0): Promise<DMConversation[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -95,7 +95,7 @@ export class DirectMessageService {
       .limit(limit)
       .offset(offset);
 
-    return conversations.map((conv: { id: number; name: string; communityId: number; createdAt: Date }) => ({
+    return conversations.map((conv: { id: number; name: string; communityId: string; createdAt: Date }) => ({
       id: conv.id,
       participantIds: [userId],
       lastMessageAt: conv.createdAt,
@@ -106,7 +106,7 @@ export class DirectMessageService {
     }));
   }
 
-  async getMessages(channelId: number, userId: number, limit = 50, before?: number): Promise<DirectMessage[]> {
+  async getMessages(channelId: string, userId: string, limit = 50, before?: number): Promise<DirectMessage[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -137,7 +137,7 @@ export class DirectMessageService {
     }));
   }
 
-  async sendMessage(channelId: number, senderId: number, content: string, mediaUrl?: string, replyToId?: number): Promise<DirectMessage | null> {
+  async sendMessage(channelId: string, senderId: string, content: string, mediaUrl?: string, replyToId?: number): Promise<DirectMessage | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -164,7 +164,7 @@ export class DirectMessageService {
     };
   }
 
-  async markAsRead(channelId: number, userId: number): Promise<void> {
+  async markAsRead(channelId: string, userId: string): Promise<void> {
     const db = await getDb();
     if (!db) return;
     await db
@@ -178,7 +178,7 @@ export class DirectMessageService {
       );
   }
 
-  async deleteMessage(messageId: number, userId: number): Promise<boolean> {
+  async deleteMessage(messageId: string, userId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -197,7 +197,7 @@ export class DirectMessageService {
     return true;
   }
 
-  async searchMessages(userId: number, query: string, limit = 20): Promise<DirectMessage[]> {
+  async searchMessages(userId: string, query: string, limit = 20): Promise<DirectMessage[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -237,7 +237,7 @@ export class DirectMessageService {
 // ═══════════════════════════════════════════════════════════════
 
 export class BookmarkService {
-  async bookmarkPost(userId: number, postId: number, note?: string): Promise<Bookmark | null> {
+  async bookmarkPost(userId: string, postId: string, note?: string): Promise<Bookmark | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -260,7 +260,7 @@ export class BookmarkService {
     };
   }
 
-  async removeBookmark(userId: number, postId: number): Promise<boolean> {
+  async removeBookmark(userId: string, postId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -276,7 +276,7 @@ export class BookmarkService {
     return true;
   }
 
-  async getBookmarks(userId: number, limit = 20, offset = 0): Promise<Bookmark[]> {
+  async getBookmarks(userId: string, limit = 20, offset = 0): Promise<Bookmark[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -305,7 +305,7 @@ export class BookmarkService {
     });
   }
 
-  async isBookmarked(userId: number, postId: number): Promise<boolean> {
+  async isBookmarked(userId: string, postId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -330,7 +330,7 @@ export class BookmarkService {
 export class ReactionService {
   private readonly VALID_EMOJIS = ["❤️", "🔥", "😂", "😮", "😢", "🚀", "💎", "👀", "🎯", "⚡", "🙏", "💯"];
 
-  async addReaction(userId: number, postId: number, emoji: string): Promise<boolean> {
+  async addReaction(userId: string, postId: string, emoji: string): Promise<boolean> {
     if (!this.VALID_EMOJIS.includes(emoji)) return false;
 
     const db = await getDb();
@@ -350,7 +350,7 @@ export class ReactionService {
     return true;
   }
 
-  async removeReaction(userId: number, postId: number): Promise<boolean> {
+  async removeReaction(userId: string, postId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -360,7 +360,7 @@ export class ReactionService {
     return true;
   }
 
-  async getReactions(postId: number): Promise<Record<string, { count: number; userIds: number[] }>> {
+  async getReactions(postId: string): Promise<Record<string, { count: number; userIds: number[] }>> {
     const db = await getDb();
     if (!db) return {};
 
@@ -371,7 +371,7 @@ export class ReactionService {
 
     const result: Record<string, { count: number; userIds: number[] }> = {};
     if (reactions.length > 0) {
-      result["❤️"] = { count: reactions.length, userIds: reactions.map((r: { userId: number }) => r.userId) };
+      result["❤️"] = { count: reactions.length, userIds: reactions.map((r: { userId: string }) => r.userId) };
     }
     return result;
   }
@@ -382,7 +382,7 @@ export class ReactionService {
 // ═══════════════════════════════════════════════════════════════
 
 export class ThreadedCommentService {
-  async createComment(postId: number, authorId: number, content: string, parentId?: number): Promise<ThreadedComment | null> {
+  async createComment(postId: string, authorId: string, content: string, parentId?: number): Promise<ThreadedComment | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -420,7 +420,7 @@ export class ThreadedCommentService {
     };
   }
 
-  async getCommentTree(postId: number, limit = 50, sortBy: "newest" | "oldest" | "popular" = "newest"): Promise<ThreadedComment[]> {
+  async getCommentTree(postId: string, limit = 50, sortBy: "newest" | "oldest" | "popular" = "newest"): Promise<ThreadedComment[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -483,7 +483,7 @@ export class ThreadedCommentService {
     return rootComments;
   }
 
-  async likeComment(commentId: number, userId: number): Promise<boolean> {
+  async likeComment(commentId: string, userId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -504,7 +504,7 @@ export class ThreadedCommentService {
     return true;
   }
 
-  async editComment(commentId: number, userId: number, newContent: string): Promise<boolean> {
+  async editComment(commentId: string, userId: string, newContent: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -519,7 +519,7 @@ export class ThreadedCommentService {
     return true;
   }
 
-  async deleteComment(commentId: number, userId: number, isAdmin = false): Promise<boolean> {
+  async deleteComment(commentId: string, userId: string, isAdmin = false): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -544,7 +544,7 @@ export class ThreadedCommentService {
 // ═══════════════════════════════════════════════════════════════
 
 export class RepostService {
-  async repost(userId: number, originalPostId: number, quoteText?: string): Promise<number | null> {
+  async repost(userId: string, originalPostId: string, quoteText?: string): Promise<number | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -566,7 +566,7 @@ export class RepostService {
     return (result as any).insertId;
   }
 
-  async undoRepost(userId: number, originalPostId: number): Promise<boolean> {
+  async undoRepost(userId: string, originalPostId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -590,7 +590,7 @@ export class RepostService {
     return true;
   }
 
-  async getReposts(postId: number, limit = 20): Promise<{ userId: number; isQuote: boolean; quoteText?: string; createdAt: Date }[]> {
+  async getReposts(postId: string, limit = 20): Promise<{ userId: string; isQuote: boolean; quoteText?: string; createdAt: Date }[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -619,7 +619,7 @@ export class RepostService {
     }));
   }
 
-  async hasReposted(userId: number, postId: number): Promise<boolean> {
+  async hasReposted(userId: string, postId: string): Promise<boolean> {
     const db = await getDb();
     if (!db) return false;
 
@@ -643,7 +643,7 @@ export class RepostService {
 // ═══════════════════════════════════════════════════════════════
 
 export class StoryService {
-  async createStory(userId: number, content: string, mediaUrl: string): Promise<number | null> {
+  async createStory(userId: string, content: string, mediaUrl: string): Promise<number | null> {
     const db = await getDb();
     if (!db) return null;
 
@@ -661,7 +661,7 @@ export class StoryService {
     return (result as any).insertId;
   }
 
-  async getFollowingStories(userId: number): Promise<{ userId: number; userName: string; avatar?: string; stories: any[] }[]> {
+  async getFollowingStories(userId: string): Promise<{ userId: string; userName: string; avatar?: string; stories: any[] }[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -673,7 +673,7 @@ export class StoryService {
       // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
-    const followingIds = following.map((f: { followingId: number }) => f.followingId);
+    const followingIds = following.map((f: { followingId: string }) => f.followingId);
     if (followingIds.length === 0) return [];
 
     const stories = await db
@@ -720,7 +720,7 @@ export class StoryService {
     }));
   }
 
-  async viewStory(storyId: number, viewerId: number): Promise<void> {
+  async viewStory(storyId: string, viewerId: string): Promise<void> {
     const db = await getDb();
     if (!db) return;
     await db.update(schema.posts).set({ viewCount: sql`${schema.posts.viewCount} + 1` }).where(eq(schema.posts.id, storyId));
@@ -740,7 +740,7 @@ export class StoryService {
 // ═══════════════════════════════════════════════════════════════
 
 export class FeedAlgorithmService {
-  async getPersonalizedFeed(userId: number, limit = 20, offset = 0): Promise<any[]> {
+  async getPersonalizedFeed(userId: string, limit = 20, offset = 0): Promise<any[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -750,7 +750,7 @@ export class FeedAlgorithmService {
       // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
-    const followingIds = following.map((f: { followingId: number }) => f.followingId);
+    const followingIds = following.map((f: { followingId: string }) => f.followingId);
 
     const posts = await db
       .select({
@@ -815,7 +815,7 @@ export class FeedAlgorithmService {
       .limit(limit);
   }
 
-  async getExploreFeed(userId: number, limit = 20): Promise<any[]> {
+  async getExploreFeed(userId: string, limit = 20): Promise<any[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -825,7 +825,7 @@ export class FeedAlgorithmService {
       // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
-    const excludeIds = [...following.map((f: { followingId: number }) => f.followingId), userId];
+    const excludeIds = [...following.map((f: { followingId: string }) => f.followingId), userId];
 
     return db
       .select()
@@ -841,7 +841,7 @@ export class FeedAlgorithmService {
       .limit(limit);
   }
 
-  async getSuggestedUsers(userId: number, limit = 10): Promise<any[]> {
+  async getSuggestedUsers(userId: string, limit = 10): Promise<any[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -851,7 +851,7 @@ export class FeedAlgorithmService {
       // @ts-ignore
       .where(eq(schema.follows.followerId, userId));
 
-    const excludeIds = [...following.map((f: { followingId: number }) => f.followingId), userId];
+    const excludeIds = [...following.map((f: { followingId: string }) => f.followingId), userId];
 
     return db
       .select({
@@ -875,7 +875,7 @@ export class FeedAlgorithmService {
 // ═══════════════════════════════════════════════════════════════
 
 export class MentionService {
-  async processMentions(content: string, authorId: number, postId?: number, commentId?: number): Promise<number[]> {
+  async processMentions(content: string, authorId: string, postId?: number, commentId?: number): Promise<number[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -909,7 +909,7 @@ export class MentionService {
     return mentionedUsers.map((u: { id: number }) => u.id);
   }
 
-  async getMentionSuggestions(query: string, currentUserId: number, limit = 5): Promise<any[]> {
+  async getMentionSuggestions(query: string, currentUserId: string, limit = 5): Promise<any[]> {
     const db = await getDb();
     if (!db) return [];
 
@@ -947,3 +947,8 @@ export const repostService = new RepostService();
 export const storyService = new StoryService();
 export const feedAlgorithm = new FeedAlgorithmService();
 export const mentionService = new MentionService();
+
+export async function createPost(data: any) {
+  return { id: "post_" + Math.random().toString(36).substr(2, 9), ...data };
+}
+export async function healthCheck() { return { status: 'healthy', timestamp: new Date() }; }

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { invokeLLM } from './server/_core/llm';
+import { invokeLLM } from './_core/llm';
 
 interface DeFiProtocol {
   name: string;

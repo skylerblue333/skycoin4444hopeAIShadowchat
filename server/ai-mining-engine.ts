@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { invokeLLM } from "./server/_core/llm";
+import { invokeLLM } from "./_core/llm";
 import { storagePut, storageGet } from "./storage";
 import { db } from "./db";
 import { users, wallets, miningStats } from "../drizzle/schema";
@@ -146,7 +146,7 @@ class AIMiningEngine {
    */
   private async mineCrypto(
     config: MiningConfig,
-    crypto: string
+    cryptoId: string
   ): Promise<MiningResult> {
     const difficulty = (crypto.getRandomValues(new Uint8Array(1))[0] / 256) * 100 + 50;
     const hashRate = (config.miningPower / 100) * 1000000;
@@ -158,7 +158,7 @@ class AIMiningEngine {
 
     return {
       timestamp: Date.now(),
-      crypto,
+      crypto: cryptoId,
       amount: parseFloat(amount.toFixed(8)),
       difficulty,
       hashRate,

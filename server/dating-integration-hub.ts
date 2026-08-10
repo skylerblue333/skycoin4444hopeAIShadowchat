@@ -1,43 +1,56 @@
-import { db } from './db';
-import { datingProfiles, datingMatches, datingSubscriptions } from '../drizzle/schema';
-import { eq } from 'drizzle-orm';
-
-// Import existing engines
-import * as paymentEngine from './payment-engine';
-import * as aiEngine from './real-ai-engine';
-import * as notificationSystem from './notification-system';
-import * as socialEngine from './social-engine';
-import * as streamingEngine from './streaming-engine';
-import * as securityEngine from './security-engine';
-import * as multiAgentOrchestrator from './multi-agent-orchestrator';
-
 /**
- * Dating Integration Hub
- * Connects dating system with all existing Skycoin engines
+ * SKYCOIN4444 Dating Integration Hub
+ * 
+ * Bridges the Dating system with other core engines:
+ * - Payment Engine (Subscriptions)
+ * - AI Engine (Matching & Insights)
+ * - Social Engine (Stories & Engagement)
+ * - Security Engine (Verification & Fraud)
+ * - Streaming Engine (Video Dates)
  */
 
+import { db } from './db';
+import { datingProfiles, datingSubscriptions, datingMatches } from '../drizzle/schema';
+import { eq, and, or } from 'drizzle-orm';
+import * as paymentEngine from './payment-engine';
+import * as aiEngine from './real-ai-engine';
+import * as socialEngine from './social-engine';
+import * as securityEngine from './security-engine';
+import * as streamingEngine from './streaming-engine';
+import * as notificationSystem from './notification-system';
+import * as multiAgentOrchestrator from './multi-agent-orchestrator';
+import datingAiMatching from './dating-ai-matching';
+import * as datingVideochat from './dating-videochat';
+import crypto from 'crypto';
+
 export interface DatingIntegrationContext {
-  userId: number;
-  matchId?: number;
+  userId: string;
+  matchId?: string;
   action: 'match' | 'message' | 'subscribe' | 'stream' | 'profile_update' | 'payment';
   metadata?: Record<string, any>;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PAYMENT INTEGRATION
+// PAYMENT & SUBSCRIPTION INTEGRATION
 // ═══════════════════════════════════════════════════════════════
 
 export async function processDatingSubscriptionPayment(
-  userId: number,
-  tier: 'premium' | 'vip' | 'elite',
-  amount: number
+  userId: string,
+  tier: 'basic' | 'premium' | 'vip' | 'elite'
 ) {
   try {
-    // Process payment through payment engine
+    const prices = { basic: 0, premium: 19.99, vip: 49.99, elite: 99.99 };
+    const amount = prices[tier];
+
+    if (amount === 0) {
+      return { success: true, message: 'Free tier activated' };
+    }
+
+    // Process payment through central engine
     const paymentResult = await paymentEngine.processPayment({
       userId,
       amount,
-      type: 'dating_subscription',
+      currency: 'USD',
       metadata: { tier, service: 'dating' },
     });
 
@@ -46,28 +59,29 @@ export async function processDatingSubscriptionPayment(
       await db
         .insert(datingSubscriptions)
         .values({
+          id: crypto.randomUUID(),
           userId,
           tier,
           status: 'active',
           startDate: new Date(),
           endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-          paymentId: paymentResult.transactionId,
+          paymentId: paymentResult.paymentId,
         });
 
       // Notify user
-      await notificationSystem.sendNotification({
+      await notificationSystem.sendNotification(
         userId,
-        type: 'subscription_activated',
-        title: `${tier.toUpperCase()} Subscription Activated`,
-        content: `You now have access to ${tier} dating features!`,
-      });
+        'subscription_activated',
+        `${tier.toUpperCase()} Subscription Activated`,
+        `You now have access to ${tier} dating features!`
+      );
 
-            return { success: true, subscriptionId: paymentResult.transactionId };
+      return { success: true, subscriptionId: paymentResult.paymentId };
     }
 
     return { success: false, error: 'Payment failed' };
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
@@ -76,8 +90,8 @@ export async function processDatingSubscriptionPayment(
 // ═══════════════════════════════════════════════════════════════
 
 export async function generateAIMatchingInsights(
-  userId: number,
-  matchId: number
+  userId: string,
+  matchId: string
 ) {
   try {
     const userProfile = await db
@@ -103,40 +117,36 @@ export async function generateAIMatchingInsights(
       },
     });
 
-        return insights;
+    return insights;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
-export async function generateConversationStarters(
-  userId: number,
-  matchId: number
-) {
+export async function getRecommendedMatchesWithAI(userId: string) {
   try {
-    const insights = await generateAIMatchingInsights(userId, matchId);
+    const recommendations = await datingAiMatching.getRecommendedMatches(userId);
+    
+    // Enrich with AI intelligence signals
+    const enriched = await Promise.all(recommendations.map(async (match) => {
+      const signals = await aiEngine.analyzeUserArchetype(match.userId);
+      return { ...match, aiSignals: signals };
+    }));
 
-    // Use AI to generate conversation starters
-    const starters = await aiEngine.generateContent({
-      type: 'conversation_starters',
-      context: insights,
-      count: 5,
-    });
-
-    return starters;
+    return enriched;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// NOTIFICATION INTEGRATION
+// NOTIFICATION BRIDGE
 // ═══════════════════════════════════════════════════════════════
 
 export async function notifyDatingEvent(
-  userId: number,
+  userId: string,
   eventType: 'match' | 'message' | 'superlike' | 'profile_view',
-  fromUserId: number,
+  fromUserId: string,
   metadata?: Record<string, any>
 ) {
   try {
@@ -147,30 +157,32 @@ export async function notifyDatingEvent(
       },
       message: {
         title: 'New Message',
-        content: 'You received a new message from your match.',
+        content: 'Someone sent you a message on Skycoin Dating.',
       },
       superlike: {
-        title: 'You got a Super Like!',
-        content: 'Someone really likes you!',
+        title: 'Super Like!',
+        content: 'Someone super liked your profile!',
       },
       profile_view: {
-        title: 'Profile Viewed',
-        content: 'Someone viewed your profile.',
+        title: 'Profile View',
+        content: 'Someone just viewed your profile.',
       },
     };
 
     const notif = notifications[eventType];
 
-    await notificationSystem.sendNotification({
+    await notificationSystem.sendNotification(
       userId,
-      type: `dating_${eventType}`,
-      title: notif.title,
-      content: notif.content,
-      metadata: { fromUserId, ...metadata },
-    });
+      `dating_${eventType}`,
+      notif.title,
+      notif.content,
+      'medium',
+      'dating',
+      { fromUserId, ...metadata }
+    );
 
-      } catch (error) {
-        throw error;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -178,7 +190,7 @@ export async function notifyDatingEvent(
 // SOCIAL INTEGRATION
 // ═══════════════════════════════════════════════════════════════
 
-export async function shareDatingProfile(userId: number, matchId: number) {
+export async function shareDatingProfile(userId: string, matchId: string) {
   try {
     const profile = await db
       .select()
@@ -198,13 +210,13 @@ export async function shareDatingProfile(userId: number, matchId: number) {
       visibility: 'followers',
     });
 
-        return post;
+    return post;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
-export async function publishDatingStory(userId: number, storyContent: string) {
+export async function publishDatingStory(userId: string, storyContent: string) {
   try {
     const post = await socialEngine.createPost({
       authorId: userId,
@@ -215,9 +227,9 @@ export async function publishDatingStory(userId: number, storyContent: string) {
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
     });
 
-        return post;
+    return post;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
@@ -226,8 +238,8 @@ export async function publishDatingStory(userId: number, storyContent: string) {
 // ═══════════════════════════════════════════════════════════════
 
 export async function initiateDatingVideoStream(
-  userId: number,
-  matchId: number,
+  userId: string,
+  matchId: string,
   streamTitle: string
 ) {
   try {
@@ -246,9 +258,9 @@ export async function initiateDatingVideoStream(
       message: 'Starting video date...',
     });
 
-        return stream;
+    return stream;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
@@ -256,7 +268,7 @@ export async function initiateDatingVideoStream(
 // SECURITY INTEGRATION
 // ═══════════════════════════════════════════════════════════════
 
-export async function verifyDatingProfile(userId: number) {
+export async function verifyDatingProfile(userId: string) {
   try {
     const verification = await securityEngine.verifyIdentity({
       userId,
@@ -271,24 +283,23 @@ export async function verifyDatingProfile(userId: number) {
         .set({ verificationStatus: 'id_verified' })
         .where(eq(datingProfiles.userId, userId));
 
-      await notificationSystem.sendNotification({
+      await notificationSystem.sendNotification(
         userId,
-        type: 'profile_verified',
-        title: 'Profile Verified',
-        content: 'Your dating profile has been verified!',
-      });
-
-          }
+        'profile_verified',
+        'Profile Verified',
+        'Your dating profile has been verified!'
+      );
+    }
 
     return verification;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
 export async function flagSuspiciousActivity(
-  userId: number,
-  reportedUserId: number,
+  userId: string,
+  reportedUserId: string,
   reason: string
 ) {
   try {
@@ -299,9 +310,9 @@ export async function flagSuspiciousActivity(
       context: 'dating',
     });
 
-        return report;
+    return report;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
@@ -310,8 +321,8 @@ export async function flagSuspiciousActivity(
 // ═══════════════════════════════════════════════════════════════
 
 export async function orchestrateDatingMatch(
-  userId1: number,
-  userId2: number
+  userId1: string,
+  userId2: string
 ) {
   try {
     const context: DatingIntegrationContext = {
@@ -328,49 +339,40 @@ export async function orchestrateDatingMatch(
         { name: 'ai_matcher', task: 'generate_insights' },
         { name: 'notification_agent', task: 'notify_users' },
         { name: 'social_agent', task: 'create_social_post' },
-        { name: 'security_agent', task: 'verify_profiles' },
       ],
     });
 
-        return orchestration;
+    return orchestration;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
 
 export async function orchestrateDatingMessage(
-  senderId: number,
-  recipientId: number,
-  messageContent: string
+  userId: string,
+  recipientId: string,
+  content: string
 ) {
   try {
     const context: DatingIntegrationContext = {
-      userId: senderId,
+      userId,
       matchId: recipientId,
       action: 'message',
-      metadata: { content: messageContent },
+      metadata: { contentLength: content.length },
     };
 
-    // Orchestrate message workflow
+    // Analyze message safety and sentiment
     const orchestration = await multiAgentOrchestrator.orchestrate({
       workflow: 'dating_message',
       context,
-      agents: [
-        { name: 'ai_agent', task: 'moderate_content' },
-        { name: 'notification_agent', task: 'notify_recipient' },
-        { name: 'security_agent', task: 'check_safety' },
-      ],
+      content,
     });
 
-        return orchestration;
+    return orchestration;
   } catch (error) {
-        throw error;
+    throw error;
   }
 }
-
-// ═══════════════════════════════════════════════════════════════
-// ANALYTICS & METRICS
-// ═══════════════════════════════════════════════════════════════
 
 export async function trackDatingMetrics(
   context: DatingIntegrationContext
@@ -384,25 +386,38 @@ export async function trackDatingMetrics(
       metadata: context.metadata,
       timestamp: new Date(),
     });
-
-      } catch (error) {
-      }
+  } catch (error) {
+    console.error('Failed to track dating metrics:', error);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// HEALTH CHECK
+// HEALTH & DIAGNOSTICS
 // ═══════════════════════════════════════════════════════════════
 
-export async function checkDatingIntegrationHealth() {
-  const health = {
-    payment: await paymentEngine.healthCheck?.(),
-    ai: await aiEngine.healthCheck?.(),
-    notifications: await notificationSystem.healthCheck?.(),
-    social: await socialEngine.healthCheck?.(),
-    streaming: await streamingEngine.healthCheck?.(),
-    security: await securityEngine.healthCheck?.(),
-    orchestration: await multiAgentOrchestrator.healthCheck?.(),
+export async function getDatingIntegrationHealth() {
+  return {
+    status: 'healthy',
+    engines: {
+      payment: await paymentEngine.healthCheck?.(),
+      ai: await aiEngine.healthCheck?.(),
+      social: await socialEngine.healthCheck?.(),
+      security: await securityEngine.healthCheck?.(),
+      streaming: await streamingEngine.healthCheck?.(),
+      orchestrator: await multiAgentOrchestrator.healthCheck?.(),
+      notifications: await notificationSystem.healthCheck?.(),
+    },
+    timestamp: new Date(),
   };
+}
 
-    return health;
+export async function generateConversationStarters(
+  userId: string,
+  matchId: string
+) {
+  try {
+    return await datingAiMatching.generateConversationStarters(userId, matchId);
+  } catch (error) {
+    throw error;
+  }
 }

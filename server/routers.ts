@@ -8,7 +8,13 @@ import { mfaRouter } from "./routers/mfa";
 // import { verifyMfaToken } from "./auth/mfa/setup";
 import { enterpriseRouter } from "./enterprise-router";
 import { aiRouter } from "./real-ai-engine-v2";
+import { aiEnhancedRouter } from "./ai-enhanced-router";
+import { intelligenceRouter } from "./intelligence-router";
+import { simulationRouter } from "./simulation-router";
+import { socialRouter, exploreRouter } from "./legacy-routers";
 import * as db from "./db";
+import { fetchLivePrices } from "./price-feed";
+import { fanLeveling, fanQuests } from "./audience-lockin-engine";
 import { users, posts, transactions, products, orders, streams, comments, likes, wallets, notifications, messages, reviews, follows } from "../drizzle/schema";
 import { eq, desc, and, or } from "drizzle-orm";
 
@@ -161,7 +167,14 @@ export const walletRouter = router({
     .mutation(async ({ ctx, input }) => ({ success: true })),
   getBalance: protectedProcedure.input(z.object({ currency: z.string() }))
     .query(async ({ ctx, input }) => ({ balance: 0 })),
-  send: protectedProcedure.input(z.object({ currency: z.string(), amount: z.number(), toAddress: z.string() }))
+  send: protectedProcedure.input(z.object({ 
+    currency: z.string().optional(), 
+    token: z.string().optional(),
+    amount: z.number(), 
+    toAddress: z.string().optional(),
+    to: z.string().optional(),
+    description: z.string().optional()
+  }))
     .mutation(async ({ ctx, input }) => ({ txHash: "0x..." })),
   receive: protectedProcedure.input(z.object({ currency: z.string() }))
     .query(async ({ ctx, input }) => ({ address: "..." })),
@@ -169,9 +182,13 @@ export const walletRouter = router({
 
 // ============ NOTIFICATION PROCEDURES ============
 export const notificationRouter = router({
-  list: protectedProcedure.query(async ({ ctx }) => []),
-  markAsRead: protectedProcedure.input(z.object({ notificationId: z.string() }))
+  list: protectedProcedure.input(z.object({ limit: z.number().optional(), offset: z.number().optional() }))
+    .query(async ({ ctx }) => []),
+  markRead: protectedProcedure.input(z.object({ notificationId: z.string().optional(), id: z.string().optional() }))
     .mutation(async ({ ctx, input }) => ({ success: true })),
+  markAsRead: protectedProcedure.input(z.object({ notificationId: z.string().optional(), id: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => ({ success: true })),
+  markAllRead: protectedProcedure.mutation(async ({ ctx }) => ({ success: true })),
   delete: protectedProcedure.input(z.object({ notificationId: z.string() }))
     .mutation(async ({ ctx, input }) => ({ success: true })),
   getUnread: protectedProcedure.query(async ({ ctx }) => ({ count: 0 })),
@@ -277,6 +294,43 @@ export const settingsRouter = router({
     .mutation(async ({ ctx, input }) => ({ success: true })),
 });
 
+// ============ FEED ROUTER ============
+export const feedRouter = router({
+  create: protectedProcedure.input(z.object({ content: z.string(), media: z.string().optional(), type: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => db.createPost(ctx.user.id, input.content, input.media)),
+  list: postRouter.list,
+  trends: publicProcedure.query(async () => [
+    { hashtag: "#skycoin4444", mentions: 4444 },
+    { hashtag: "#defi", mentions: 2891 },
+    { hashtag: "#web3", mentions: 2341 },
+    { hashtag: "#nft", mentions: 1876 },
+    { hashtag: "#ai", mentions: 987 },
+  ]),
+});
+
+// ============ PRICES ROUTER ============
+export const pricesRouter = router({
+  live: publicProcedure.query(async () => fetchLivePrices()),
+});
+
+// ============ GAMIFICATION ROUTER ============
+export const gamificationRouter = router({
+  getState: protectedProcedure.query(async ({ ctx }) => ({
+    xp: await fanLeveling.getLevel(ctx.user.id).then(l => l.xp),
+    level: await fanLeveling.getLevel(ctx.user.id).then(l => l.level),
+    streak: 5,
+    quests: await fanQuests.getActiveQuests(),
+    badges: 3,
+  })),
+  recordLogin: protectedProcedure.mutation(async () => ({ success: true })),
+});
+
+// ============ CREATOR ROUTER ============
+export const creatorRouter = router({
+  subscribe: protectedProcedure.input(z.object({ creatorId: z.number(), tier: z.string() }))
+    .mutation(async () => ({ success: true })),
+});
+
 // ============ MAIN ROUTER ============
 export const appRouter = router({
   auth: authRouter,
@@ -291,6 +345,8 @@ export const appRouter = router({
   mining: miningRouter,
   user: userRouter,
   post: postRouter,
+  feed: feedRouter,
+  creator: creatorRouter,
   marketplace: marketplaceRouter,
   stream: streamRouter,
   transaction: transactionRouter,
@@ -306,6 +362,13 @@ export const appRouter = router({
   voice: voiceRouter,
   enterprise: enterpriseRouter,
   ai: aiRouter,
+  hopeAI: aiEnhancedRouter,
+  hopeIntelligence: intelligenceRouter,
+  simulation: simulationRouter,
+  social: socialRouter,
+  explore: exploreRouter,
+  prices: pricesRouter,
+  gamification: gamificationRouter,
   gamefi: gameFiRouter,
   mfa: mfaRouter,
 });

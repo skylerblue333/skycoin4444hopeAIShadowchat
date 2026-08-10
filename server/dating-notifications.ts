@@ -229,14 +229,14 @@ export async function notifyMatch(user1Id: string, user2Id: string, matchId: str
     await createNotification(user1Id, 'match', user2Id, {
       matchId,
       title: '🎉 New Match!',
-      content: `You matched with ${user2.displayName || 'someone'}!`,
+      content: `You matched with ${user2.name || 'someone'}!`,
       actionUrl: `/dating/messages/${matchId}`,
     });
 
     await createNotification(user2Id, 'match', user1Id, {
       matchId,
       title: '🎉 New Match!',
-      content: `You matched with ${user1.displayName || 'someone'}!`,
+      content: `You matched with ${user1.name || 'someone'}!`,
       actionUrl: `/dating/messages/${matchId}`,
     });
   }
@@ -248,7 +248,7 @@ export async function notifyMessage(recipientId: string, senderId: string, messa
   if (sender) {
     await createNotification(recipientId, 'message', senderId, {
       messageId,
-      title: `💬 Message from ${sender.displayName || 'someone'}`,
+      title: `💬 Message from ${sender.name || 'someone'}`,
       content: content.substring(0, 100),
       actionUrl: `/dating/messages`,
     });
@@ -261,7 +261,7 @@ export async function notifySuperlike(recipientId: string, senderId: string) {
   if (sender) {
     await createNotification(recipientId, 'superlike', senderId, {
       title: '⭐ Super Like!',
-      content: `${sender.displayName || 'Someone'} super liked you!`,
+      content: `${sender.name || 'Someone'} super liked you!`,
       actionUrl: `/dating`,
     });
   }
@@ -273,7 +273,7 @@ export async function notifyLike(recipientId: string, senderId: string) {
   if (sender) {
     await createNotification(recipientId, 'like', senderId, {
       title: '❤️ New Like',
-      content: `${sender.displayName || 'Someone'} liked you!`,
+      content: `${sender.name || 'Someone'} liked you!`,
       actionUrl: `/dating`,
     });
   }
@@ -285,7 +285,7 @@ export async function notifyProfileView(recipientId: string, viewerId: string) {
   if (viewer) {
     await createNotification(recipientId, 'profile_view', viewerId, {
       title: '👀 Profile View',
-      content: `${viewer.displayName || 'Someone'} viewed your profile!`,
+      content: `${viewer.name || 'Someone'} viewed your profile!`,
       actionUrl: `/dating`,
     });
   }

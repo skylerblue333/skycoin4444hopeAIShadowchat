@@ -10,6 +10,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Zap, CreditCard, Gift, Briefcase, Plus, Mic, MicOff } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/hooks/useAuth";
 import { useAppStore } from "@/shared/state/appStore";
 import { parseIntent } from "@/core/actions/actionEngine";
 import { ACTION_TYPES } from "@/core/actions/actionTypes";
@@ -31,6 +32,7 @@ const QUICK_ACTIONS = [
 ];
 
 export function ExecuteMode() {
+  const { user } = useAuth();
   const { pendingActionText, setPendingActionText } = useAppStore();
   const [messages, setMessages] = useState<Message[]>([{
     id: "welcome",
@@ -170,6 +172,7 @@ export function ExecuteMode() {
     const intent = parseIntent(content);
     try {
       const res = await aiChat.mutateAsync({
+        userId: user?.id || "anonymous",
         message: content,
         systemPrompt: `You are the ShadowChat OS action engine. Intent detected: ${intent.type}. Confirm the action concisely in 1-2 sentences.`,
       });

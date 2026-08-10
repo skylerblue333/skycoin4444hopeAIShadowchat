@@ -13,7 +13,7 @@ import crypto from 'crypto';
  */
 
 import { getDb } from './db.js';
-import { invokeLLM } from './server/_core/llm.js';
+import { invokeLLM } from './_core/llm.js';
 
 // ─── SKY444 Token Configuration ────────────────────────────────────────
 
